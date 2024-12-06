@@ -1,1 +1,7 @@
 cryptography
+tox
+pytest
+setuptools
+wheel
+twine
+build
