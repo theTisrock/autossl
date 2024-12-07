@@ -54,7 +54,7 @@ class RSAPrivateKey(object):
             self.FORMATS['pkcs1'],
             serialization.NoEncryption()
         )
-        return key_bytes
+        return key_bytes[:-1]
 
     @pkcs1.setter
     def pkcs1(self, _):
@@ -67,7 +67,7 @@ class RSAPrivateKey(object):
             self.FORMATS['pkcs8'],
             serialization.NoEncryption()
         )
-        return key_bytes
+        return key_bytes[:-1]
 
     @pkcs8.setter
     def pkcs8(self, _):
