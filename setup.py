@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from autossl import version
 
 setup(
-    name='autossl',
+    name='autocert',
     version=version,
     packages=find_packages(),
     install_requires=[
