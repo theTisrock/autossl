@@ -17,6 +17,9 @@ class CSR(object):
         self.email = None
         self._sans = list()
 
+    def __repr__(self):
+        return f"<CSR cn:{self.common_name} sans:{len(self.get_san_names())} key:rsa{self._pvt_key.key_size}-bit>"
+
     @property
     def common_name(self):
         """String representation of destined for the certificate; used for humans mostly."""
@@ -37,7 +40,7 @@ class CSR(object):
 
     @sans.setter
     def sans(self, alt_names: list):
-        """Set the cryptography and string versions of the SANS and drop duplicates."""
+        """Replace the cryptography and string versions of the SANS and drop duplicates."""
         if not isinstance(alt_names, list):
             raise ValueError("When setting multiple SANs at once, a list must be provided.")
         self._sans = list()
@@ -46,6 +49,7 @@ class CSR(object):
 
 
     def add_san(self, san: str):
+        """Add one SAN at a time while restricting duplicates."""
         if self._sans is None: self._sans = list()
         if san is None: return
         if san in self.get_san_names(): return
@@ -54,7 +58,9 @@ class CSR(object):
              'object': x509.DNSName(u"{san}".format(san=san))}
         )
 
-    def get_san_names(self): return [san['str'] for san in self._sans]
+    def get_san_names(self):
+        """Get a human readable SANS list"""
+        return [san['str'] for san in self._sans]
 
 
     @property
