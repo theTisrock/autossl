@@ -9,6 +9,7 @@ import pprint
 class CSR(object):
 
     ENCODINGS = {'pem': serialization.Encoding.PEM, 'der': serialization.Encoding.DER}
+    FORMATS = {'pkcs1': serialization.PublicFormat.PKCS1, 'pkcs8': serialization.PublicFormat.SubjectPublicKeyInfo}
 
     def __init__(self, pvtkey: RSAPrivateKey, common_name: str, critical: bool = False, out_encoding: str = 'pem'):
         self.is_signed = False
@@ -29,6 +30,7 @@ class CSR(object):
         self._out = None
         self.selected_encoding = out_encoding
         self._public_key = None
+        self.signed_csr = None
 
     def __str__(self):
         csr = {
@@ -221,6 +223,7 @@ class CSR(object):
         # sign
         signed_csr = self.builder.sign(self._pvt_key, hashes.SHA256())
         self.is_signed = True
+        self.signed_csr = signed_csr
         # make available
         _out = signed_csr.public_bytes(CSR.ENCODINGS[self.selected_encoding])
         self._out = _out
@@ -237,3 +240,11 @@ class CSR(object):
             pub_fmt = serialization.PublicFormat.SubjectPublicKeyInfo
         self._public_key = signed_csr.public_key().public_bytes(CSR.ENCODINGS['pem'], format=pub_fmt)[:-1]
         return
+
+    def get_public_key(self):
+        key = self.signed_csr.public_key().public_bytes(
+            CSR.ENCODINGS[self.selected_encoding],
+            format=CSR.FORMATS[self._pvtkey_fmt]
+        )
+        if self.selected_encoding == 'pem': key = key[:-1]
+        return key

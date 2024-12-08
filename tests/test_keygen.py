@@ -97,3 +97,21 @@ class TestCSR:
             assert b'-----BEGIN RSA PUBLIC KEY-----' in csr.public_key
         if csr._pvtkey_fmt == 'pkcs8':
             assert b'-----BEGIN PUBLIC KEY-----' in csr.public_key
+
+    @pytest.mark.parametrize("fmt,encoding", [
+        ('pkcs1', 'pem', ),
+        ('pkcs1', 'der', ),
+        ('pkcs8', 'pem', ),
+        ('pkcs8', 'der', )
+    ])
+    def test_get_public_key(self, fmt, encoding):
+        csr = CSR(my_rsa_key(fmt=fmt), 'foo.com', out_encoding=encoding)
+        csr.finalize()
+        public_key = csr.get_public_key()
+        print(public_key)
+
+        if encoding == 'der':
+            assert isinstance(public_key, bytes)
+            assert b'PUBLIC KEY' not in public_key
+        if encoding == 'pem':
+            assert b'PUBLIC KEY' in public_key
