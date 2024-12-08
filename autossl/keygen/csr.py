@@ -1,3 +1,5 @@
+from idlelib.iomenu import encoding
+
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
@@ -37,8 +39,8 @@ class CSR(object):
             'st': self.state,
             'c': self.country,
             'signed': self.is_signed,
-            'pem': self.pem,
-            'pubkey': self.public_key
+            'pem': self.pem.decode(encoding='utf-8') if self.pem else self.pem,
+            'pubkey': self.public_key.decode(encoding='utf-8') if self.public_key else self.public_key
         }
         return pprint.pformat(csr)
 
@@ -233,5 +235,5 @@ class CSR(object):
             pub_fmt = serialization.PublicFormat.PKCS1
         else:
             pub_fmt = serialization.PublicFormat.SubjectPublicKeyInfo
-        self._public_key = signed_csr.public_key().public_bytes(CSR.ENCODINGS[self.selected_encoding], format=pub_fmt)
+        self._public_key = signed_csr.public_key().public_bytes(CSR.ENCODINGS['pem'], format=pub_fmt)[:-1]
         return

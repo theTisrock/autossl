@@ -89,11 +89,11 @@ class TestCSR:
             assert isinstance(csr.pem, bytes)
             assert b'-----BEGIN CERTIFICATE REQUEST-----' in csr.pem
             assert csr.out == csr.pem
-            if csr._pvtkey_fmt == 'pkcs1':
-                assert b'-----BEGIN RSA PUBLIC KEY-----' in csr.public_key
-            if csr._pvtkey_fmt == 'pkcs8':
-                assert b'-----BEGIN PUBLIC KEY-----' in csr.public_key
         if select_encoding == 'der':
             assert isinstance(csr.der, bytes)
             assert b'foo.com' in csr.der
             assert csr.out == csr.der
+        if csr._pvtkey_fmt == 'pkcs1':
+            assert b'-----BEGIN RSA PUBLIC KEY-----' in csr.public_key
+        if csr._pvtkey_fmt == 'pkcs8':
+            assert b'-----BEGIN PUBLIC KEY-----' in csr.public_key
