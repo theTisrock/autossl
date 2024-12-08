@@ -45,7 +45,7 @@ class TestCSR:
     @pytest.mark.parametrize("cn,o,ou,l,st,email,c", [
         ('foo.com', 'acme', 'marketing', 'springfield', 'OH', 'jack@foo.com', 'US', )
     ])
-    def test_csr_fields(self, cn, o, ou, l, st, email, c):
+    def test_fields(self, cn, o, ou, l, st, email, c):
         csr = CSR(my_rsa_key(), cn)
         csr.organization = o
         csr.organizational_unit = ou
@@ -60,3 +60,19 @@ class TestCSR:
         assert csr.state == st
         assert csr.email == email
         assert csr.country == c
+
+
+    @pytest.mark.parametrize("cn,sans,num_sans", [
+        ('foo.com', ['bar.com', 'baz.com', 'bar.com', 'test.com'], 3, )
+    ])
+    def test_dns_names(self, cn, sans, num_sans):
+        csr = CSR(my_rsa_key(), cn)
+        for san in sans:  # add one at a time
+            csr.add_san(san)  # filters duplicates
+        san_names = csr.get_san_names()
+        assert len(san_names) == num_sans  # prove duplicate was removed
+        for san in san_names:
+            assert san in sans
+        set_sans = ['x.com', 'y.com', 'z.com']
+        csr.sans = set_sans
+        assert csr.get_san_names() == set_sans

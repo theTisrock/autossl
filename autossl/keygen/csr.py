@@ -1,5 +1,6 @@
 from cryptography import x509
 from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
 from .pvtkey import RSAPrivateKey
 
 class CSR(object):
@@ -14,6 +15,7 @@ class CSR(object):
         self.state = None
         self.country = None
         self.email = None
+        self._sans = list()
 
     @property
     def common_name(self):
@@ -23,7 +25,37 @@ class CSR(object):
     @common_name.setter
     def common_name(self, cn: str):
         """The object representation destined for certificate to be used for final construction of CSR."""
-        self._cn = x509.NameAttribute(NameOID.COMMON_NAME, u"{cn}".format(cn=cn)) if cn else None
+        self._cn = x509.NameAttribute(NameOID.COMMON_NAME, u"{cn}".format(cn=cn))
+
+    @property
+    def sans(self):
+        """Get a copy of the cryptography SANs objects."""
+        _sans = list()
+        if len(self._sans) == 0: return _sans
+        for s in self._sans: _sans.append(s['object'])
+        return _sans
+
+    @sans.setter
+    def sans(self, alt_names: list):
+        """Set the cryptography and string versions of the SANS and drop duplicates."""
+        if not isinstance(alt_names, list):
+            raise ValueError("When setting multiple SANs at once, a list must be provided.")
+        self._sans = list()
+        for san in alt_names:
+            self.add_san(san)
+
+
+    def add_san(self, san: str):
+        if self._sans is None: self._sans = list()
+        if san is None: return
+        if san in self.get_san_names(): return
+        self._sans.append(
+            {'str': f"{san}",
+             'object': x509.DNSName(u"{san}".format(san=san))}
+        )
+
+    def get_san_names(self): return [san['str'] for san in self._sans]
+
 
     @property
     def organization(self):
