@@ -77,6 +77,7 @@ class TestCSR:
         assert csr.pem is None
         assert csr.der is None
         assert csr.out is None
+        assert csr.public_key is None
 
     @pytest.mark.parametrize("select_encoding", ['pem', 'der'])
     def test_postsigned_outputs(self, select_encoding):
@@ -88,6 +89,10 @@ class TestCSR:
             assert isinstance(csr.pem, bytes)
             assert b'-----BEGIN CERTIFICATE REQUEST-----' in csr.pem
             assert csr.out == csr.pem
+            if csr._pvtkey_fmt == 'pkcs1':
+                assert b'-----BEGIN RSA PUBLIC KEY-----' in csr.public_key
+            if csr._pvtkey_fmt == 'pkcs8':
+                assert b'-----BEGIN PUBLIC KEY-----' in csr.public_key
         if select_encoding == 'der':
             assert isinstance(csr.der, bytes)
             assert b'foo.com' in csr.der

@@ -10,6 +10,7 @@ class CSR(object):
 
     def __init__(self, pvtkey: RSAPrivateKey, common_name: str, critical: bool = False, out_encoding: str = 'pem'):
         self.is_signed = False
+        self._pvtkey_fmt = pvtkey.selected_format
         self._pvt_key = pvtkey._native_key_object
         self.builder = x509.CertificateSigningRequestBuilder()
         self.common_name = common_name
@@ -25,6 +26,7 @@ class CSR(object):
         self._der = None
         self._out = None
         self.selected_encoding = out_encoding
+        self._public_key = None
 
     def __str__(self):
         csr = {
@@ -35,7 +37,8 @@ class CSR(object):
             'st': self.state,
             'c': self.country,
             'signed': self.is_signed,
-            'pem': self.pem
+            'pem': self.pem,
+            'pubkey': self.public_key
         }
         return pprint.pformat(csr)
 
@@ -78,7 +81,6 @@ class CSR(object):
             self.add_san(san)
         return
 
-
     def add_san(self, san: str):
         """Add one SAN at a time while restricting duplicates."""
         if self._do_not_modify_fields(): return
@@ -94,7 +96,6 @@ class CSR(object):
     def get_san_names(self):
         """Get a human readable SANS list"""
         return [san['str'] for san in self._sans]
-
 
     @property
     def organization(self):
@@ -193,6 +194,15 @@ class CSR(object):
         print("Setting the output property explicitly is not allowed.")
         return
 
+    @property
+    def public_key(self):
+        return None if not self._public_key else self._public_key
+
+    @public_key.setter
+    def public_key(self, _):
+        print("Setting the output property explicitly is not allowed.")
+        return
+
     def finalize(self):
         """Glue the CSR components together, sign them, and store the PEM encoding in bytes."""
         basic_fields = [self._cn]
@@ -217,4 +227,11 @@ class CSR(object):
             self._out = _out[:-1]
         self._pem = signed_csr.public_bytes(serialization.Encoding.PEM)[:-1]
         self._der = signed_csr.public_bytes(serialization.Encoding.DER)
+
+        # extract public key for viewing
+        if self._pvtkey_fmt == 'pkcs1':
+            pub_fmt = serialization.PublicFormat.PKCS1
+        else:
+            pub_fmt = serialization.PublicFormat.SubjectPublicKeyInfo
+        self._public_key = signed_csr.public_key().public_bytes(CSR.ENCODINGS[self.selected_encoding], format=pub_fmt)
         return

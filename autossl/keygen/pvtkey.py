@@ -37,14 +37,14 @@ class RSAPrivateKey(object):
         self.pub_exponent = exponent
         self.key_len = key_length
         self.backend_name = backend.__name__
-        self._selected_format = fmt
+        self.selected_format = fmt
         self._selected_encoding = 'pem'
 
     def __repr__(self):
-        return f"<RSAPvtKey:{id(self)} exp:{self.pub_exponent},{self.key_len}-bits,{self._selected_format}>"
+        return f"<RSAPvtKey:{id(self)} exp:{self.pub_exponent},{self.key_len}-bits,{self.selected_format}>"
 
     def __str__(self):
-        key: bytes = getattr(self, self._selected_format)
+        key: bytes = getattr(self, self.selected_format)
         return key.decode(encoding='utf-8')
 
     @property
