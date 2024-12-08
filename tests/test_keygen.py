@@ -35,12 +35,6 @@ class TestCSR:
     def test__init__(self):
         csr = CSR(my_rsa_key(), 'foo.com')
         assert csr.common_name == 'foo.com'
-        try:  # not allowed to call fields before they are set
-            print(csr)
-            csr.email
-            assert False
-        except AttributeError:
-            assert True
 
     @pytest.mark.parametrize("cn,o,ou,l,st,email,c", [
         ('foo.com', 'acme', 'marketing', 'springfield', 'OH', 'jack@foo.com', 'US', )
@@ -60,10 +54,10 @@ class TestCSR:
         assert csr.state == st
         assert csr.email == email
         assert csr.country == c
-
+        assert csr.is_signed == False
 
     @pytest.mark.parametrize("cn,sans,num_sans", [
-        ('foo.com', ['bar.com', 'baz.com', 'bar.com', 'test.com'], 3, )
+        ('foo.com', ['bar.com', 'baz.com', 'bar.com', 'test.com'], 3,)
     ])
     def test_dns_names(self, cn, sans, num_sans):
         csr = CSR(my_rsa_key(), cn)
@@ -76,3 +70,25 @@ class TestCSR:
         set_sans = ['x.com', 'y.com', 'z.com']
         csr.sans = set_sans
         assert csr.get_san_names() == set_sans
+
+    def test_presigned_outputs(self):
+        csr = CSR(my_rsa_key(), 'foo.com')
+        assert csr.is_signed == False
+        assert csr.pem is None
+        assert csr.der is None
+        assert csr.out is None
+
+    @pytest.mark.parametrize("select_encoding", ['pem', 'der'])
+    def test_postsigned_outputs(self, select_encoding):
+        csr = CSR(my_rsa_key(), 'foo.com', out_encoding=select_encoding)
+        csr.finalize()
+        assert select_encoding == csr.selected_encoding
+        assert isinstance(csr.out, bytes)
+        if select_encoding == 'pem':
+            assert isinstance(csr.pem, bytes)
+            assert b'-----BEGIN CERTIFICATE REQUEST-----' in csr.pem
+            assert csr.out == csr.pem
+        if select_encoding == 'der':
+            assert isinstance(csr.der, bytes)
+            assert b'foo.com' in csr.der
+            assert csr.out == csr.der
