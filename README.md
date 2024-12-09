@@ -52,6 +52,8 @@ print(repr(pvtkey))
 # GENERATE A CSR
 print("generating csr...")
 csr = keygen.CSR(pvtkey, 'foo.com', critical=True, out_encoding='der')  # defaults: critical=True, out_encoding='pem'
+print(repr(csr))
+print("adding metadata to csr")
 # NOTE: out_encoding selects the main output encoding. (see below)
 csr.country = 'US'  # build your CSR fields
 csr.email = 'joe.smith@foo.com'
