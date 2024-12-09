@@ -42,12 +42,15 @@ csr.get_public_key()  # optional: get the public key
 
 # ------------------------------ EXPANDED ----------------------------------------
 # GENERATE A PRIVATE KEY
+print("generating private key...")
 pvtkey = keygen.RSAPrivateKey(fmt='pkcs8')  # default is pkcs1
 pvtkey = keygen.RSAPrivateKey(key_length=4096)  # default is 2048; choices: 2048, 3072, 4096
 pvtkey.pkcs1  # get different formats, all currently in PEM encoding
 pvtkey.pkcs8
+print(repr(pvtkey))
 
 # GENERATE A CSR
+print("generating csr...")
 csr = keygen.CSR(pvtkey, 'foo.com', critical=True, out_encoding='der')  # defaults: critical=True, out_encoding='pem'
 # NOTE: out_encoding selects the main output encoding. (see below)
 csr.country = 'US'  # build your CSR fields
@@ -60,11 +63,11 @@ csr.common_name = 'bar.com'  # changes from foo.com to bar.com, optional
 csr.common_name = 'foo.com'
 csr.sans = ['bar.com', 'baz.com', 'foobar.com']
 csr.add_san('www.foo.com')
-print(csr)  # you can inspect your csr before signing it
+print(repr(csr))  # you can inspect your csr before signing it
 
 csr.finalize()  # assemble and sign your CSR
 # NOTE: now that the csr is signed, you may not edit the fields
-print(csr)  # inspect your csr after signing; you'll notice it has changed
+print(repr(csr))  # inspect your csr after signing; you'll notice it has changed
 
 csr.out  # the CSR expressed in the selected encoding from when you set 'out_encoding'
 csr.pem  # ...though you can still access each type explicitly
