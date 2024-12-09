@@ -47,7 +47,7 @@ class CSR(object):
         return pprint.pformat(csr)
 
     def __repr__(self):
-        return f"<CSR cn:{self.common_name} sans:{len(self.get_san_names())} key:rsa{self._pvt_key.key_size}-bit>"
+        return f"<CSR {id(self)} cn:{self.common_name} sans:{len(self.get_san_names())} key:rsa{self._pvt_key.key_size}-bit signed:{self.is_signed}>"
 
     def _do_not_modify_fields(self):
         if self.is_signed:
