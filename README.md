@@ -66,17 +66,19 @@ csr.common_name = 'foo.com'
 csr.sans = ['bar.com', 'baz.com', 'foobar.com']
 csr.add_san('www.foo.com')
 print(repr(csr))  # you can inspect your csr before signing it
-
+print("signing csr...")
 csr.finalize()  # assemble and sign your CSR
 # NOTE: now that the csr is signed, you may not edit the fields
 print(repr(csr))  # inspect your csr after signing; you'll notice it has changed
 
-csr.out  # the CSR expressed in the selected encoding from when you set 'out_encoding'
+print("csr")
+print(csr.out)  # the CSR expressed in the selected encoding from when you set 'out_encoding'
 csr.pem  # ...though you can still access each type explicitly
 csr.der
 
 # GET THE PUBLIC KEY
-csr.get_public_key()  # public key format will match that of the private key
+print("getting public key...")
+print(csr.get_public_key())  # public key format will match that of the private key
 ```
 
 ## Certificate Acquisition
