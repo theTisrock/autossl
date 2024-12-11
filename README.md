@@ -14,12 +14,14 @@ and different data types.
 3. Prevent outages and reduced traffic by assessing your PKI footprint across cloud platforms and third-party services.
 
 
-Design Philosophy
-- Components are useful independently or within a custom workflow.
-- Components are flexible between different PKCS standards and encodings.
+Design Philosophy (non-functional requirements)
+- Cryptographic assets are useful independently as data or within a custom workflow as either data or proprietary objects.
+- Cryptographic objects are flexible between different PKCS standards and encodings.
 
 
-Functionality
+Functionality (functional requirements)
+Keygen > Cert Acquisition > Platform Distribution (cloud | 3rd party) > Footprint Scans & Monitoring
+
 - Keygen: Private Keys, CSRs
 - Certificate Acquisition: CA interfacing and Certificate Objects
 
