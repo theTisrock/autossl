@@ -23,8 +23,8 @@ class DigicertCertificates(CACertificatesInterface):
     SERVERAUTH_MAX_VALIDITY_DAYS = 396
     DUPLICATE_POLICY_CHOICES = DigicertDuplicatePolicies.str_choices()
     DUPLICATE_POLICY = DigicertDuplicatePolicies.PREFER
-    _CERTIFICATE_USE_CHOICES = DigitalCertificateUses.str_choices()
-    _CERTIFICATE_USE = DigitalCertificateUses.SERVER_AUTH
+    CERTIFICATE_USE_CHOICES = DigitalCertificateUses.str_choices()
+    CERTIFICATE_USE = DigitalCertificateUses.SERVER_AUTH
     duplicate_csr = None  # cache the CSR for ordering duplicate certificates
 
     class urls:
@@ -92,16 +92,16 @@ class DigicertCertificates(CACertificatesInterface):
         return cls.DUPLICATE_POLICY
 
     @classmethod
-    def set_certificate_type(cls, certificate_type: str):
+    def set_certificate_functions_as(cls, certificate_type: str):
         """Select the type of certificate that is ordered from DigiCert.
         'server_auth': a conventional SSL certificate used by the client to validate the server.
         'client_auth': a mutual TLS certificate used by the server to validate the client.
         'code_signing': used to validate a digital signature associated a dataset, typically software or documents."""
-        if certificate_type not in cls._CERTIFICATE_TYPES:
+        if certificate_type.upper() not in cls.CERTIFICATE_USE_CHOICES:
             raise ValueError(
-                f"Invalid certificate type. Selection: '{certificate_type}' Choices: {cls._CERTIFICATE_TYPES}"
+                f"Invalid certificate type. Selection: '{certificate_type}' Choices: {cls.CERTIFICATE_USE_CHOICES}"
             )
-        cls._CERTIFICATE_TYPE = certificate_type
+        cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
     def submit_certificate_request(self, csr):
