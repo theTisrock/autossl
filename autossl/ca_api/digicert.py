@@ -1,3 +1,6 @@
+from idlelib.iomenu import encoding
+
+from autossl.keygen import CSR
 from .ca import DigitalCertificateUses
 import os
 from .ca import CACertificatesInterface
@@ -50,8 +53,7 @@ class DigicertCertificates(CACertificatesInterface):
         # API KEY
         self.auth_header: dict = {'X-DC-DEVKEY': api_key}
         if not isinstance(self.auth_header['X-DC-DEVKEY'], str):
-            if not os.environ.get('DIGICERT_APIKEY', False):
-                raise ValueError("API key not found.")
+            if not os.environ.get('DIGICERT_APIKEY', False): raise ValueError("API key not found.")
             self.auth_header['X-DC-DEVKEY'] = os.environ['DIGICERT_APIKEY']
 
         # product settings
@@ -104,8 +106,87 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
-    def submit_certificate_request(self, csr):
-        pass
+    def _submit_certificate_request(self, csr: str):
+        """Concerns certificate request submissions that do not require duplicate certificates.
+        Submit the CSR to DigiCert for signing. Does not acquire the SSL certificate itself.
+        To do that, see 'fetch_certificate'.
+        Returns the entire response which contains the order_id.
+        Use the returned order_id to download the certificate or check its status."""
+        headers = {}
+        headers.update(self.auth_header)
+        headers.update(self.static_headers.contenttype_json)
+        headers.update(self.static_headers.accept_json)
+
+        product_name = self.product_name
+        url = self.submit_csr_url.format(product_name=product_name)
+
+        data = {
+            "certificate": {
+                "common_name": "example.com",
+                "dns_names": [
+                    "sub.example.com",
+                    "app.example.com"
+                ],
+                "csr": "<csr>",
+                "signature_hash": "sha256",
+                "server_platform": {
+                    "id": 2
+                }
+            },
+            "comments": "Certificate for app server.",
+            "container": {
+                "id": 334455
+            },
+            "auto_renew": 1,
+            "custom_renewal_message": "Keep this renewed.",
+            "organization": {
+                "id": 123456,
+                "contacts": [
+                    {
+                        "contact_type": "organization_contact",
+                        "user_id": 565611
+                    },
+                    {
+                        "contact_type": "technical_contact",
+                        "first_name": "Jill",
+                        "last_name": "Valentine",
+                        "job_title": "STAR Member",
+                        "telephone": "8017019600",
+                        "email": "jill.valentine@digicert.com"
+                    }
+                ]
+            },
+            "order_validity": {
+                "years": 1
+            },
+            "payment_method": "balance"
+        }
+
+    def _validate_csr(self, csr: str | CSR):
+        csr_text: None = None
+        # extract CSR to text
+        if isinstance(csr, str):
+            csr_text: str = csr
+        elif isinstance(csr, CSR):
+            csr_text: str = csr.pem.decode(encoding='utf-8')
+        # check the csr before submitting
+        if not csr_text:
+            raise ValueError(f"Invalid data type for CSR: {type(csr_text)}. Allowed types: str, autossl.keygen.CSR")
+        header = '-----BEGIN CERTIFICATE REQUEST-----'
+        footer = '-----END CERTIFICATE REQUEST-----'
+        if not csr_text.startswith(header) and csr_text.endswith(footer):
+            raise ValueError(f"The decoded CSR does not have the correct header/footer formatting: {csr_text}")
+        return csr_text
+
+
+
+    def submit_certificate_request(self, pem_csr: str | CSR):
+        """TODO: process csr at this level, then pass down to worker methods"""
+        csr = self._validate_csr(pem_csr)
+
+
+
+
 
     def certificate_is_issued(self, id_):
         pass
