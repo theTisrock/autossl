@@ -1,5 +1,17 @@
+from .ca import DigitalCertificateUses
 import os
 from .ca import CACertificatesInterface
+from enum import Enum
+
+
+class DigicertDuplicatePolicies(Enum):
+    PREFER = 1
+    REQUIRE = 2
+    NEW = 3
+
+    @classmethod
+    def str_choices(cls):
+        return [e.name for e in list(cls)]
 
 class DigicertCertificates(CACertificatesInterface):
     """A client that interacts with Digicert to
@@ -9,6 +21,11 @@ class DigicertCertificates(CACertificatesInterface):
     Not to be used for any other purpose."""
     DEFAULT_PRODUCT_NAME = 'ssl_basic'
     SERVERAUTH_MAX_VALIDITY_DAYS = 396
+    DUPLICATE_POLICY_CHOICES = DigicertDuplicatePolicies.str_choices()
+    DUPLICATE_POLICY = DigicertDuplicatePolicies.PREFER
+    _CERTIFICATE_USE_CHOICES = DigitalCertificateUses.str_choices()
+    _CERTIFICATE_USE = DigitalCertificateUses.SERVER_AUTH
+    duplicate_csr = None  # cache the CSR for ordering duplicate certificates
 
     class urls:
         BASE = "https://www.digicert.com/services/v2/"
@@ -64,15 +81,15 @@ class DigicertCertificates(CACertificatesInterface):
         'require': only orders a duplicate certificate from an existing order.
         'new': places a new order for a certificate and does not check for duplicates.
         """
-        if policy not in cls._DUPLICATE_POLICY_CHOICES:
+        if policy.upper() not in cls.DUPLICATE_POLICY_CHOICES:
             raise ValueError(
-                f"Invalid duplicate policy. Selection: '{policy}' Choices: {cls._DUPLICATE_POLICY_CHOICES}"
+                f"Invalid duplicate policy. Selection: '{policy}' Choices: {cls.DUPLICATE_POLICY_CHOICES}"
             )
-        cls._DUPLICATE_POLICY = policy
+        cls.DUPLICATE_POLICY = getattr(DigicertDuplicatePolicies, policy.upper())
 
     @classmethod
     def get_duplicate_policy(cls):
-        return cls._DUPLICATE_POLICY
+        return cls.DUPLICATE_POLICY
 
     @classmethod
     def set_certificate_type(cls, certificate_type: str):

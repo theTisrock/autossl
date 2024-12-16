@@ -1,3 +1,13 @@
+from enum import Enum
+
+class DigitalCertificateUses(Enum):
+    SERVER_AUTH = 1
+    CLIENT_AUTH = 2
+    CODE_SIGNING = 3
+
+    @classmethod
+    def str_choices(cls):
+        return [use.name for use in list(cls)]
 
 
 class CACertificatesInterface(object):
