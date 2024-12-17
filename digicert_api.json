@@ -11,15 +11,15 @@
     {
       "uuid": "dfd2f873-e9d9-413b-85bd-0442754bd46d",
       "type": "http",
-      "documentation": "Submit CSR for signing",
-      "method": "get",
+      "documentation": "Submit CSR for signing SUCCESS",
+      "method": "post",
       "endpoint": "order/certificate/ssl_basic",
       "responses": [
         {
           "uuid": "75b6b1ca-13d5-47d2-a095-ead94f188235",
-          "body": "{\n  \"message\": \"hello from fake digicert api\"\n}",
+          "body": "{\n  \"id\": 123456,\n  \"requests\": [\n    {\n      \"id\": 321,\n      \"status\": \"pending\"\n    }\n  ]\n}",
           "latency": 0,
-          "statusCode": 200,
+          "statusCode": 201,
           "label": "",
           "headers": [],
           "bodyType": "INLINE",
