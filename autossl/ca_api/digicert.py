@@ -5,6 +5,8 @@ from .ca import DigitalCertificateUses
 import os
 from .ca import CACertificatesInterface
 from enum import Enum
+from cryptography.x509 import load_pem_x509_csr, DNSName
+from cryptography.x509.oid import NameOID, ExtensionOID
 
 
 class DigicertDuplicatePolicies(Enum):
@@ -106,7 +108,7 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
-    def _submit_certificate_request(self, csr: str):
+    def _submit_certificate_request(self, csr: str, cn: str, sans: list, sighash: str, ):
         """Concerns certificate request submissions that do not require duplicate certificates.
         Submit the CSR to DigiCert for signing. Does not acquire the SSL certificate itself.
         To do that, see 'fetch_certificate'.
@@ -133,12 +135,8 @@ class DigicertCertificates(CACertificatesInterface):
                     "id": 2
                 }
             },
-            "comments": "Certificate for app server.",
-            "container": {
-                "id": 334455
-            },
-            "auto_renew": 1,
-            "custom_renewal_message": "Keep this renewed.",
+            "auto_renew": 0,
+            "auto_reissue": 0,
             "organization": {
                 "id": 123456,
                 "contacts": [
@@ -157,32 +155,59 @@ class DigicertCertificates(CACertificatesInterface):
                 ]
             },
             "order_validity": {
-                "years": 1
+                "days": 397
             },
             "payment_method": "balance"
         }
 
-    def _validate_csr(self, csr: str | CSR):
-        csr_text: None = None
-        # extract CSR to text
-        if isinstance(csr, str):
-            csr_text: str = csr
-        elif isinstance(csr, CSR):
-            csr_text: str = csr.pem.decode(encoding='utf-8')
-        # check the csr before submitting
-        if not csr_text:
-            raise ValueError(f"Invalid data type for CSR: {type(csr_text)}. Allowed types: str, autossl.keygen.CSR")
+    def _is_valid_user_csr(self, csr: str):
         header = '-----BEGIN CERTIFICATE REQUEST-----'
         footer = '-----END CERTIFICATE REQUEST-----'
-        if not csr_text.startswith(header) and csr_text.endswith(footer):
-            raise ValueError(f"The decoded CSR does not have the correct header/footer formatting: {csr_text}")
-        return csr_text
+        try:
+            assert csr.startswith(header)
+            assert csr.endswith(footer)
+        except AssertionError:
+            raise AssertionError("Either the header or footer of the CSR is invalid. "
+                                 "Ensure it contains no trailing or leading white space characters.")
+        return True
+
+    @classmethod
+    def _extract_user_supplied_csr_fields(cls, csr: str):
+        required_fields = dict()
+        _csr = load_pem_x509_csr(csr.encode(encoding='utf-8'))
+        _cn = _csr.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
+        ext = _csr.extensions.get_extension_for_oid(ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
+        _sans = ext.value.get_values_for_type(DNSName)
+        required_fields['cn'] = _cn
+        required_fields['sans'] = _sans
+        required_fields['signature_hash'] = _csr.signature_hash_algorithm.name
+        return required_fields
 
 
 
-    def submit_certificate_request(self, pem_csr: str | CSR):
-        """TODO: process csr at this level, then pass down to worker methods"""
-        csr = self._validate_csr(pem_csr)
+
+
+
+    # def submit_certificate_request(self, pem_csr: str | CSR):
+    #     required_csr_fields = {'cn': None, 'dns_names': None, 'signature_hash': None}
+    #     csr_txt = None
+    #     if isinstance(pem_csr, str):
+    #         # TODO retain the original text of the CSR
+    #         csr_txt = pem_csr
+    #         # TODO validate the text CSR
+    #         if self._is_valid_user_csr(pem_csr):
+    #             # TODO load the csr
+    #             # TODO extract required fields
+    #             self._extract_user_supplied_csr_fields(_csr)
+    #
+    #         # TODO submit the csr to digicert
+    #         # TODO get the order id
+    #         pass
+    #     elif isinstance(pem_csr, CSR):
+    #         # TODO extract required csr fields
+    #         # TODO submit the csr to digicert
+    #         # TODO get the order id
+    #         pass
 
 
 

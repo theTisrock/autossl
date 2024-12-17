@@ -5,21 +5,19 @@ from autossl.keygen import CSR, RSAPrivateKey
 
 class TestDigicertCertificatesClient(object):
 
+    @pytest.mark.parametrize("with_sans", [True, False])
+    def test_extract_user_supplied_csr(self, with_sans, csr_without_sans, csr_with_sans):
+        if with_sans:
+            results = DigicertCertificates._extract_user_supplied_csr_fields(csr_with_sans)
+            assert results['sans'] == ['www.foo.com', 'bar.com', 'www.bar.com']
+        else:
+            results = DigicertCertificates._extract_user_supplied_csr_fields(csr_without_sans)
+            assert results['sans'] == []
+        if not results:
+            assert False
 
-    @pytest.mark.parametrize("tyype", [str, CSR])
-    def test_valid_csr_before_submit(self, tyype, foo_dot_com_csr_str):
-        csr = None
-        if tyype.__class__.__name__ == CSR.__class__.__name__:
-            csr = CSR(RSAPrivateKey(), 'foo.com')
-            csr.finalize()
-        elif type.__class__.__name__ == str.__class__.__name__:
-            csr = foo_dot_com_csr_str
-        client = DigicertCertificates(api_key='x')
-        csr_txt = client._validate_csr(csr)
-        assert isinstance(csr_txt, str)
-        assert csr_txt.startswith('-----BEGIN CERTIFICATE REQUEST-----')
-        assert csr_txt.endswith('-----END CERTIFICATE REQUEST-----')
-
+        assert results['cn'] == 'foo.com'
+        assert results['signature_hash'] == 'sha256'
 
     def test_submit_csr(self):
         pass

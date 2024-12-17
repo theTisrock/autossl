@@ -3,21 +3,41 @@ import pytest
 
 
 @pytest.fixture(scope='function')
-def foo_dot_com_csr_str():
-    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"  # foo.com, no sans
+def csr_with_sans():
+    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"  # cn: foo.com w/ multiple sans
+                "MIICljCCAX4CAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\n"
+                "BQADggEPADCCAQoCggEBAK3tlcBM5fWfh0VPYhNjPhjLmrlbgFx6N69EvZdwyYX0\n"
+                "LwZDaHm8voCILE706lTgXre70Of3D+licjPyn25FzfYZkPtbh2SsEknaWCxRBY0W\n"
+                "e/IN5rZ0OuPhAHQIDWcmcOndajuqinjI4+mwrPYXq9WPX5kletvUA4iaVp2m+Y0k\n"
+                "dzg2NUxVYPn0QAKQZpkTGtBcnUMBC6TEkFomkoaXL59qFPGMC7JnBDtZBU3goUWi\n"
+                "OF8YQvAdNuGLLAhr9HGJys6Vr2podbKu+CjC2NA7kDbbTm+JiNevB/OMvhNKz3SM\n"
+                "aqR385choyaZ6brNKU3frm5swSxIEOKY56QtvUdowmECAwEAAaA/MD0GCSqGSIb3\n"
+                "DQEJDjEwMC4wLAYDVR0RBCUwI4ILd3d3LmZvby5jb22CB2Jhci5jb22CC3d3dy5i\n"
+                "YXIuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQCZmbVO3nu9wWCZDNGX3BQ7HPARSXd+\n"
+                "Wf6NnjiS+97u6L7RGQLiMP+M6j7N3dG3M+Wgj9p45LdONFnftwILEzl1hAny7Yxz\n"
+                "MytAnYiBhZOUhvHNWJH0GCDocqnGaXKfbE5ooHdkNsKwFion6A3JMb88l0y18MsW\n"
+                "vJmw8uJUzemw/Qmu7IMguMOGFOgobELkTyYCPHOqFnCAvl+orGGTAfaDaIECz7W9\n"
+                "7ga34sDjoWNzrfSgX+8GC/qby+hLgm+28joyto2I98qVqVGrMy3DM9bUttmr0tnY\n"
+                "BtgchsOyBUr9k2KsfJwchzcOYNyAnoBB1+0l0a3g/HZiVFzXMWOykgFm\n"
+                "-----END CERTIFICATE REQUEST-----")
+    return test_csr
+
+@pytest.fixture(scope='function')
+def csr_without_sans():
+    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"
                 "MIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\n"
-                "BQADggEPADCCAQoCggEBAMf3BmnmNy4PK4UjZb4YnyMBf91QlMX4vm+dwG65ISkv\n"
-                "i5YyWjmBhi+kvWxLZm0nut9/85ewE4STSg7CZhK0pj+lI3RRw7A9Rw6mVxsWzU8D\n"
-                "40YV5DzpugSVnIKGQZsZJO9UVL/FXcOkOguI2gROjpoBuBXrwzKWaUNHUmp7SnD6\n"
-                "f7/VAE2yfiBuykHUND0/F4t/TeUkOmThGx+HmUnVlHp8MIjnFzkOWtRaIA5qgGB0\n"
-                "R+mwb17gvu8VAsWUsYZYCEk0N8xZm0AQN4CHVDlVJ19CS6B7oBBMdrf8OPu6gMGd\n"
-                "do1hQ5tla6Xug5vWJGf/XBn5N+UWTCZI4IV3hZg5EUECAwEAAaAcMBoGCSqGSIb3\n"
-                "DQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAdzhDwvuxNqAg\n"
-                "5yWNvjmHGCJLLEGq9BSikBgOzaZim3J/2ArJQQpdv9XA0+6nyW+HI+fzkE61JMy9\n"
-                "CEdJ5l6ttlnGOAILg2IpbNFhsq4PydwE2Ji9DBOD6AZjbtmHprx3qQyCCHGiCWpE\n"
-                "OYmL6XQ0a1diSNpGc4I/ci7XQWUt8mOikn5DySe0Q4YxeCpVOmsnrtFjU1R3JFv/\n"
-                "3Ui/rFhwUbyYTgju2WrwiKBAZXErVN1E8Vq/prFGKvZqzLnIIZ/zzmrGPy0A5rrI\n"
-                "XTDc5iAda59tq9wibn2SF/cBHD9L7ESlq4GmaoAJoIJDFjpJ7ydFjKndNWOTv8rg\n"
-                "C/EA2C/JWg==\n"
+                "BQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\n"
+                "NetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\n"
+                "6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\n"
+                "pIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\n"
+                "8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\n"
+                "66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\n"
+                "DQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\n"
+                "mGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\n"
+                "M/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\n"
+                "1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\n"
+                "U0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\n"
+                "DLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\n"
+                "Hvof4Vk1WA==\n"
                 "-----END CERTIFICATE REQUEST-----")
     return test_csr
