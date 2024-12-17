@@ -69,6 +69,9 @@ class DigicertCertificates(CACertificatesInterface):
         self.base_url = base_url
         self.submit_csr_url = self.urls.SUBMIT_CSR.format(BASE=self.base_url, product_name="{product_name}")
 
+    def __repr__(self):
+        return f"<DigiCert Cert Client: '{self.base_url}'>"
+
 
     # PRODUCT SETTINGS
     def set_product_name(self, name: str):
@@ -111,21 +114,19 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
-    def _submit_certificate_request(self, request_data: dict):
+    def list_orders(self):
+        pass
+
+    def _submit_csr(self, request_data: dict, request_headers: dict):
         """Concerns certificate request submissions that do not require duplicate certificates.
         Submit the CSR to DigiCert for signing. Does not acquire the SSL certificate itself.
         To do that, see 'fetch_certificate'.
         Returns the entire response which contains the order_id.
         Use the returned order_id to download the certificate or check its status."""
-        headers = {}
-        headers.update(self.auth_header)
-        headers.update(self.static_headers.contenttype_json)
-        headers.update(self.static_headers.accept_json)
-
         product_name = self.product_name
         url = self.submit_csr_url.format(product_name=product_name)
 
-        r = requests.post(url=url, headers=headers, json=request_data)
+        r = requests.post(url=url, headers=request_headers, json=request_data)
         r.raise_for_status()
         try:
             r.raise_for_status()
@@ -138,6 +139,14 @@ class DigicertCertificates(CACertificatesInterface):
         DigicertCertificates.duplicate_csr = None
         result = r.json()
         return result
+
+    def _submit_csr_for_duplicate(self, request_data: dict, request_headers: dict):
+        # in order to order a duplicate we must be able to
+        # TODO list_orders
+        # TODO filter eligible duplicate orders
+        # TODO select an order index for duplicate ordering
+        # TODO return a selected order from a collection of possible duplicates
+        pass
 
     def _is_valid_user_csr(self, csr: str):
         header = '-----BEGIN CERTIFICATE REQUEST-----'
@@ -163,6 +172,11 @@ class DigicertCertificates(CACertificatesInterface):
         return required_fields
 
     def submit_certificate_request(self, pem_csr: str | CSR):
+        headers = {}
+        headers.update(self.auth_header)
+        headers.update(self.static_headers.contenttype_json)
+        headers.update(self.static_headers.accept_json)
+
         required_csr_fields = {'common_name': None, 'dns_names': None, 'signature_hash': None, 'csr': None}
         csr_txt = None
         # CSR field extraction
@@ -187,11 +201,17 @@ class DigicertCertificates(CACertificatesInterface):
             'organization': {'id': self.org_id},
             'payment_method': self.payment_method
         }
-        # ORDER NEW OR ORDER DUPLICATE?
+        # ORDER NEW OR ORDER DUPLICATE according to duplicate policy on the client
         result = None
         duplicate_policy = DigicertCertificates.get_duplicate_policy()
-        if duplicate_policy in [DigicertDuplicatePolicies.NEW, DigicertDuplicatePolicies.PREFER]:
-            result = self._submit_certificate_request(request_data)
+        if duplicate_policy in [DigicertDuplicatePolicies.REQUIRE, DigicertDuplicatePolicies.PREFER]:
+            result = self._submit_csr_for_duplicate(request_data, headers)
+        if duplicate_policy == DigicertDuplicatePolicies.REQUIRE and result is None:
+            DigicertCertificates.duplicate_csr = None  # clear the current CSR since the request failed
+            print("Failed to fetch a duplicate certificate from Digicert.")
+            return None
+        if duplicate_policy in [DigicertDuplicatePolicies.NEW, DigicertDuplicatePolicies.PREFER]:  # new order attempt
+            result = self._submit_csr(request_data, headers)
 
         order_id = result['id']
         return order_id
