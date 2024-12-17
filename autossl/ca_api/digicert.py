@@ -1,6 +1,6 @@
 import pprint
-from idlelib.iomenu import encoding
-
+import requests
+from requests.exceptions import HTTPError
 from autossl.keygen import CSR
 from .ca import DigitalCertificateUses
 import os
@@ -52,7 +52,6 @@ class DigicertCertificates(CACertificatesInterface):
         The interface is designed with serverAuth (typical) SSL certificate issuance in mind,
         though it may also handle clientAuth (MTLS) and Code Signing in the future."""
         auth_header_template = "{api_key}"
-
         # AUTH
         self.auth_header: dict = {'X-DC-DEVKEY': api_key}
         if not isinstance(self.auth_header['X-DC-DEVKEY'], str):
@@ -64,6 +63,7 @@ class DigicertCertificates(CACertificatesInterface):
         self.product_name = self.DEFAULT_PRODUCT_NAME
         self.days_valid = self.SERVERAUTH_MAX_VALIDITY_DAYS
         self.server_platform = 2
+        self.payment_method = "balance"
 
         # urls
         self.base_url = base_url
@@ -111,7 +111,7 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
-    def _submit_certificate_request(self, csr: str, cn: str, sans: list, sighash: str, ):
+    def _submit_certificate_request(self, request_data: dict):
         """Concerns certificate request submissions that do not require duplicate certificates.
         Submit the CSR to DigiCert for signing. Does not acquire the SSL certificate itself.
         To do that, see 'fetch_certificate'.
@@ -125,43 +125,19 @@ class DigicertCertificates(CACertificatesInterface):
         product_name = self.product_name
         url = self.submit_csr_url.format(product_name=product_name)
 
-        data = {
-            "certificate": {
-                "common_name": "example.com",
-                "dns_names": [
-                    "sub.example.com",
-                    "app.example.com"
-                ],
-                "csr": "<csr>",
-                "signature_hash": "sha256",
-                "server_platform": {
-                    "id": 2
-                }
-            },
-            "auto_renew": 0,
-            "auto_reissue": 0,
-            "organization": {
-                "id": 123456,
-                "contacts": [
-                    {
-                        "contact_type": "organization_contact",
-                        "user_id": 565611
-                    },
-                    {
-                        "contact_type": "technical_contact",
-                        "first_name": "Jill",
-                        "last_name": "Valentine",
-                        "job_title": "STAR Member",
-                        "telephone": "8017019600",
-                        "email": "jill.valentine@digicert.com"
-                    }
-                ]
-            },
-            "order_validity": {
-                "days": 397
-            },
-            "payment_method": "balance"
-        }
+        r = requests.post(url=url, headers=headers, json=request_data)
+        r.raise_for_status()
+        try:
+            r.raise_for_status()
+        except HTTPError as http_error:
+            print(r.text)
+            r.raise_for_status()
+
+        # this is not a duplicate request, so clobber the previous csr so that downstream certificate download
+        # doesn't try to fetch a potentially non-existent duplicate
+        DigicertCertificates.duplicate_csr = None
+        result = r.json()
+        return result
 
     def _is_valid_user_csr(self, csr: str):
         header = '-----BEGIN CERTIFICATE REQUEST-----'
@@ -186,27 +162,20 @@ class DigicertCertificates(CACertificatesInterface):
         required_fields['signature_hash'] = _csr.signature_hash_algorithm.name
         return required_fields
 
-
-
-
-
-
     def submit_certificate_request(self, pem_csr: str | CSR):
         required_csr_fields = {'common_name': None, 'dns_names': None, 'signature_hash': None, 'csr': None}
         csr_txt = None
         # CSR field extraction
         if isinstance(pem_csr, str):
             csr_txt = pem_csr
-            if self._is_valid_user_csr(pem_csr):
-                required_csr_fields = self._extract_user_supplied_csr_fields(pem_csr)
+            if self._is_valid_user_csr(pem_csr): required_csr_fields = self._extract_user_supplied_csr_fields(pem_csr)
         elif isinstance(pem_csr, CSR):
             csr_txt = pem_csr.pem.decode(encoding='utf-8')
             required_csr_fields['dns_names'] = pem_csr.get_san_names()
             required_csr_fields['common_name'] = pem_csr.common_name
             required_csr_fields['signature_hash'] = pem_csr.signed_csr.signature_hash_algorithm.name
-
         # BUILD REQUEST DATA
-        data = {
+        request_data = {
             'certificate': {
                 'common_name': required_csr_fields['common_name'],
                 'dns_names': required_csr_fields['dns_names'],
@@ -214,13 +183,18 @@ class DigicertCertificates(CACertificatesInterface):
                 'cert_validity': {'days': self.days_valid},
                 'csr': csr_txt,
                 'server_platform': {'id': self.server_platform}
-            }
+            },
+            'organization': {'id': self.org_id},
+            'payment_method': self.payment_method
         }
-        pprint.pprint(data)
+        # ORDER NEW OR ORDER DUPLICATE?
+        result = None
+        duplicate_policy = DigicertCertificates.get_duplicate_policy()
+        if duplicate_policy in [DigicertDuplicatePolicies.NEW, DigicertDuplicatePolicies.PREFER]:
+            result = self._submit_certificate_request(request_data)
 
-        # TODO: submit CSR to digicert
-        # TODO: get order id
-
+        order_id = result['id']
+        return order_id
 
     def certificate_is_issued(self, id_):
         pass
