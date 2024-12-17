@@ -68,6 +68,7 @@ class DigicertCertificates(CACertificatesInterface):
         # urls
         self.base_url = base_url
         self.submit_csr_url = self.urls.SUBMIT_CSR.format(BASE=self.base_url, product_name="{product_name}")
+        self.list_orders_url = self.urls.LIST_ORDERS.format(BASE=self.base_url)
 
     def __repr__(self):
         return f"<DigiCert Cert Client: '{self.base_url}'>"
@@ -114,8 +115,20 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
+    def _list_orders(self, request_headers: dict, query: str = None):
+        query = query if query else ''
+        url = f"{self.list_orders_url}{query}"
+        response = requests.get(url=url, headers=request_headers)
+        response.raise_for_status()
+        return response
+
     def list_orders(self):
-        pass
+        """Get orders ordered by date created in descending order. Optionally filter on common_name, and date_created."""
+        headers = {}
+        headers.update(self.auth_header)
+        headers.update(self.static_headers.contenttype_json)
+        r = self._list_orders(headers)
+        return r.json()
 
     def _submit_csr(self, request_data: dict, request_headers: dict):
         """Concerns certificate request submissions that do not require duplicate certificates.

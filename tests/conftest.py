@@ -24,7 +24,7 @@ def csr_with_sans():
 
 @pytest.fixture(scope='function')
 def csr_without_sans():
-    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"
+    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"  # foo.com
                 "MIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\n"
                 "BQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\n"
                 "NetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\n"
@@ -41,3 +41,77 @@ def csr_without_sans():
                 "Hvof4Vk1WA==\n"
                 "-----END CERTIFICATE REQUEST-----")
     return test_csr
+
+@pytest.fixture(scope='function')
+def list_orders():
+    orders = {
+        "orders": [
+            {
+                "id": 123456,
+                "certificate": {
+                    "id": 104,
+                    "common_name": "example.com",
+                    "dns_names": [
+                        "example2.com",
+                        "example3.com"
+                    ],
+                    "signature_hash": "sha256"
+                },
+                "status": "pending",
+                "is_renewed": False,
+                "date_created": "2018-10-16T17:29:56+00:00",
+                "organization": {
+                    "id": 112233,
+                    "name": "Epigyne Unwieldiness llc"
+                },
+                "validity_years": 1,
+                "disable_renewal_notifications": False,
+                "container": {
+                    "id": 14,
+                    "name": "DigiCert Inc."
+                },
+                "product": {
+                    "name_id": "ssl_plus",
+                    "name": "Standard SSL",
+                    "type": "ssl_certificate"
+                },
+                "has_duplicates": False,
+                "product_name_id": "ssl_plus"
+            },
+            {
+                "id": 123457,
+                "certificate": {
+                    "id": 105,
+                    "common_name": "example.org",
+                    "dns_names": [
+                        "sub.example.org"
+                    ],
+                    "valid_till": "2020-04-30",
+                    "days_remaining": 289,
+                    "signature_hash": "sha256"
+                },
+                "status": "issued",
+                "is_renewed": False,
+                "date_created": "2019-04-30T18:02:50+00:00",
+                "organization": [],
+                "validity_years": 1,
+                "container": {
+                    "id": 14,
+                    "name": "CertCentral"
+                },
+                "product": {
+                    "name_id": "ssl_dv_geotrust",
+                    "name": "GeoTrust Standard DV",
+                    "type": "dv_ssl_certificate"
+                },
+                "has_duplicates": False,
+                "product_name_id": "ssl_dv_geotrust"
+            }
+        ],
+        "page": {
+            "total": 31,
+            "limit": 0,
+            "offset": 0
+        }
+    }
+    return orders

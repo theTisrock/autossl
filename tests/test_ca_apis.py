@@ -3,6 +3,9 @@ from autossl.ca_api import DigicertCertificates
 from autossl.keygen import CSR, RSAPrivateKey
 import pprint
 
+TEST_BASE_URL = 'http://localhost:3001/'
+
+
 
 class TestDigicertCertificatesClient(object):
 
@@ -22,13 +25,19 @@ class TestDigicertCertificatesClient(object):
         assert results['common_name'] == 'foo.com'
         assert results['signature_hash'] == 'sha256'
 
+    def test_list_orders(self, list_orders):
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        actual = digicert.list_orders()
+        assert actual['orders'] == list_orders['orders']
+
+
     @pytest.mark.parametrize("cn,sans", [
         ('foo.com', ['www.foo.com', 'bar.com', 'www.bar.com'], ),
         ('foo.com', [], ),
     ])
     def test_submit_csr(self, cn, sans):
         expected = 123456  # mockoon: digicert_api.json
-        digicert = DigicertCertificates(123, 'http://localhost:3001/', api_key='x')
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
         csr = CSR(RSAPrivateKey(), 'foo.com')
         for s in sans:
             csr.add_san(s)

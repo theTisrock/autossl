@@ -38,12 +38,47 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "76e3d4b3-ccb5-4c9a-8c17-ef1993cbe3d8",
+      "type": "http",
+      "documentation": "List Orders",
+      "method": "get",
+      "endpoint": "order/certificate",
+      "responses": [
+        {
+          "uuid": "33e32304-a2db-4e18-b17c-3766ea489c27",
+          "body": "{\n  \"orders\": [\n    {\n      \"id\": 123456,\n      \"certificate\": {\n        \"id\": 104,\n        \"common_name\": \"example.com\",\n        \"dns_names\": [\n          \"example2.com\",\n          \"example3.com\"\n        ],\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"pending\",\n      \"is_renewed\": false,\n      \"date_created\": \"2018-10-16T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 112233,\n        \"name\": \"Epigyne Unwieldiness llc\"\n      },\n      \"validity_years\": 1,\n      \"disable_renewal_notifications\": false,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"DigiCert Inc.\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_plus\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_plus\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"example.org\",\n        \"dns_names\": [\n          \"sub.example.org\"\n        ],\n        \"valid_till\": \"2020-04-30\",\n        \"days_remaining\": 289,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2019-04-30T18:02:50+00:00\",\n      \"organization\": [],\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_dv_geotrust\",\n        \"name\": \"GeoTrust Standard DV\",\n        \"type\": \"dv_ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_dv_geotrust\"\n    }\n  ],\n  \"page\": {\n    \"total\": 31,\n    \"limit\": 0,\n    \"offset\": 0\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
     {
       "type": "route",
       "uuid": "dfd2f873-e9d9-413b-85bd-0442754bd46d"
+    },
+    {
+      "type": "route",
+      "uuid": "76e3d4b3-ccb5-4c9a-8c17-ef1993cbe3d8"
     }
   ],
   "proxyMode": false,
