@@ -1,3 +1,4 @@
+import pprint
 from idlelib.iomenu import encoding
 
 from autossl.keygen import CSR
@@ -46,21 +47,23 @@ class DigicertCertificates(CACertificatesInterface):
         contenttype_urlencoded = {"Content-Type": "application/x-www-form-urlencoded"}
         contenttype_json = {"Content-Type": "application/json"}
 
-    def __init__(self, base_url: str = urls.BASE, api_key: str = None):
+    def __init__(self, org_id: int, base_url: str = urls.BASE, api_key: str = None):
         """Communicates with DigiCert. Submits CSRs, checks cert status and fetches certificate chain.
         The interface is designed with serverAuth (typical) SSL certificate issuance in mind,
         though it may also handle clientAuth (MTLS) and Code Signing in the future."""
         auth_header_template = "{api_key}"
 
-        # API KEY
+        # AUTH
         self.auth_header: dict = {'X-DC-DEVKEY': api_key}
         if not isinstance(self.auth_header['X-DC-DEVKEY'], str):
             if not os.environ.get('DIGICERT_APIKEY', False): raise ValueError("API key not found.")
             self.auth_header['X-DC-DEVKEY'] = os.environ['DIGICERT_APIKEY']
+        self.org_id = org_id
 
         # product settings
         self.product_name = self.DEFAULT_PRODUCT_NAME
         self.days_valid = self.SERVERAUTH_MAX_VALIDITY_DAYS
+        self.server_platform = 2
 
         # urls
         self.base_url = base_url
@@ -178,8 +181,8 @@ class DigicertCertificates(CACertificatesInterface):
         _cn = _csr.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
         ext = _csr.extensions.get_extension_for_oid(ExtensionOID.SUBJECT_ALTERNATIVE_NAME)
         _sans = ext.value.get_values_for_type(DNSName)
-        required_fields['cn'] = _cn
-        required_fields['sans'] = _sans
+        required_fields['common_name'] = _cn
+        required_fields['dns_names'] = _sans
         required_fields['signature_hash'] = _csr.signature_hash_algorithm.name
         return required_fields
 
@@ -188,29 +191,35 @@ class DigicertCertificates(CACertificatesInterface):
 
 
 
-    # def submit_certificate_request(self, pem_csr: str | CSR):
-    #     required_csr_fields = {'cn': None, 'dns_names': None, 'signature_hash': None}
-    #     csr_txt = None
-    #     if isinstance(pem_csr, str):
-    #         # TODO retain the original text of the CSR
-    #         csr_txt = pem_csr
-    #         # TODO validate the text CSR
-    #         if self._is_valid_user_csr(pem_csr):
-    #             # TODO load the csr
-    #             # TODO extract required fields
-    #             self._extract_user_supplied_csr_fields(_csr)
-    #
-    #         # TODO submit the csr to digicert
-    #         # TODO get the order id
-    #         pass
-    #     elif isinstance(pem_csr, CSR):
-    #         # TODO extract required csr fields
-    #         # TODO submit the csr to digicert
-    #         # TODO get the order id
-    #         pass
+    def submit_certificate_request(self, pem_csr: str | CSR):
+        required_csr_fields = {'common_name': None, 'dns_names': None, 'signature_hash': None, 'csr': None}
+        csr_txt = None
+        # CSR field extraction
+        if isinstance(pem_csr, str):
+            csr_txt = pem_csr
+            if self._is_valid_user_csr(pem_csr):
+                required_csr_fields = self._extract_user_supplied_csr_fields(pem_csr)
+        elif isinstance(pem_csr, CSR):
+            csr_txt = pem_csr.pem.decode(encoding='utf-8')
+            required_csr_fields['dns_names'] = pem_csr.get_san_names()
+            required_csr_fields['common_name'] = pem_csr.common_name
+            required_csr_fields['signature_hash'] = pem_csr.signed_csr.signature_hash_algorithm.name
 
+        # BUILD REQUEST DATA
+        data = {
+            'certificate': {
+                'common_name': required_csr_fields['common_name'],
+                'dns_names': required_csr_fields['dns_names'],
+                'signature_hash': required_csr_fields['signature_hash'],
+                'cert_validity': {'days': self.days_valid},
+                'csr': csr_txt,
+                'server_platform': {'id': self.server_platform}
+            }
+        }
+        pprint.pprint(data)
 
-
+        # TODO: submit CSR to digicert
+        # TODO: get order id
 
 
     def certificate_is_issued(self, id_):
