@@ -60,8 +60,8 @@
           "rules": [
             {
               "target": "query",
-              "modifier": "sort",
-              "value": "-date_created",
+              "modifier": "filters[common_name]",
+              "value": "foo.com",
               "invert": false,
               "operator": "equals"
             }
@@ -75,7 +75,7 @@
         },
         {
           "uuid": "deaacec3-74b6-4c98-b949-054f451d73b7",
-          "body": "{\n  \"orders\": [\n    {\n      \"id\": 123456,\n      \"certificate\": {\n        \"id\": 104,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\",\n          \"bar.com\",\n          \"baz.com\"\n        ],\n        \"signature_hash\": \"sha256\",\n        \"valid_till\": \"2030-10-03\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-10-03T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corp\"\n      },\n      \"validity_years\": 1,\n      \"disable_renewal_notifications\": false,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"DigiCert Inc.\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\",\n          \"bar.com\"\n        ],\n        \"valid_till\": \"2030-10-02\",\n        \"days_remaining\": 289,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-10-02T18:02:50+00:00\",\n      \"organization\": [],\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\"\n        ],\n        \"valid_till\": \"2030-10-01\",\n        \"days_remaining\": 289,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-10-01T18:02:50+00:00\",\n      \"organization\": [],\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    }\n  ],\n  \"page\": {\n    \"total\": 31,\n    \"limit\": 0,\n    \"offset\": 0\n  }\n}",
+          "body": "{\n  \"message\": \"HELLO WORLD\"\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -87,22 +87,22 @@
           "rules": [
             {
               "target": "query",
-              "modifier": "filters[common_name]",
+              "modifier": "filters.common_name",
               "value": "foo.com",
               "invert": false,
               "operator": "equals"
             },
             {
               "target": "query",
-              "modifier": "filters[status]",
-              "value": "issued",
+              "modifier": "filters.date_created",
+              "value": "2023-12-17T00:00:00...2024-12-17T23:59:59",
               "invert": false,
               "operator": "equals"
             },
             {
               "target": "query",
-              "modifier": "filters[date_created]",
-              "value": "2023-12-17T00:00:00...2024-12-17T23:59:59",
+              "modifier": "filters.status",
+              "value": "issued",
               "invert": false,
               "operator": "equals"
             },
@@ -114,7 +114,7 @@
               "operator": "equals"
             }
           ],
-          "rulesOperator": "OR",
+          "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": false,
