@@ -75,7 +75,7 @@
         },
         {
           "uuid": "deaacec3-74b6-4c98-b949-054f451d73b7",
-          "body": "{\n  \"orders\": [\n    {\n      \"id\": 123456,\n      \"certificate\": {\n        \"id\": 104,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"disable_renewal_notifications\": false,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"DigiCert Inc.\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\",\n          \"bar.com\"\n        ],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123458,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\"\n        ],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    }\n  ],\n  \"page\": {\n    \"total\": 31,\n    \"limit\": 0,\n    \"offset\": 0\n  }\n}",
+          "body": "{\n  \"orders\": [\n    {\n      \"id\": 123456,\n      \"certificate\": {\n        \"id\": 104,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"disable_renewal_notifications\": false,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"DigiCert Inc.\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\",\n          \"bar.com\"\n        ],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123458,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\"\n        ],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123459,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\"\n        ],\n        \"valid_till\": \"2025-12-02\",\n        \"days_remaining\": 300,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    }\n  ],\n  \"page\": {\n    \"total\": 31,\n    \"limit\": 0,\n    \"offset\": 0\n  }\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -125,6 +125,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "564c8d34-cd1d-4632-88a7-b4ae3c6f2710",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "order/certificate/123459/duplicate",
+      "responses": [
+        {
+          "uuid": "72549f31-aaef-4e25-8922-020000e081e9",
+          "body": "{\n  \"id\": 123459,\n  \"requests\": [\n    {\n      \"id\": 332211\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -135,6 +166,10 @@
     {
       "type": "route",
       "uuid": "76e3d4b3-ccb5-4c9a-8c17-ef1993cbe3d8"
+    },
+    {
+      "type": "route",
+      "uuid": "564c8d34-cd1d-4632-88a7-b4ae3c6f2710"
     }
   ],
   "proxyMode": false,
