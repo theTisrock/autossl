@@ -1,4 +1,3 @@
-import pprint
 import requests
 from requests.exceptions import HTTPError
 from autossl.keygen import CSR
@@ -19,6 +18,7 @@ class DigicertDuplicatePolicies(Enum):
     @classmethod
     def str_choices(cls):
         return [e.name for e in list(cls)]
+
 
 class DigicertCertificates(CACertificatesInterface):
     """A client that interacts with Digicert to
@@ -53,28 +53,25 @@ class DigicertCertificates(CACertificatesInterface):
         """Communicates with DigiCert. Submits CSRs, checks cert status and fetches certificate chain.
         The interface is designed with serverAuth (typical) SSL certificate issuance in mind,
         though it may also handle clientAuth (MTLS) and Code Signing in the future."""
-        auth_header_template = "{api_key}"
         # AUTH
         self.auth_header: dict = {'X-DC-DEVKEY': api_key}
         if not isinstance(self.auth_header['X-DC-DEVKEY'], str):
             if not os.environ.get('DIGICERT_APIKEY', False): raise ValueError("API key not found.")
             self.auth_header['X-DC-DEVKEY'] = os.environ['DIGICERT_APIKEY']
         self.org_id = org_id
-
         # product settings
         self.product_name = self.DEFAULT_PRODUCT_NAME
         self.days_valid = self.SERVERAUTH_MAX_VALIDITY_DAYS
         self.server_platform = 2
         self.payment_method = "balance"
-
         # urls
         self.base_url = base_url
         self.submit_csr_url = self.urls.SUBMIT_CSR.format(BASE=self.base_url, product_name="{product_name}")
         self.list_orders_url = self.urls.LIST_ORDERS.format(BASE=self.base_url)
+        self.duplicate_order_url = self.urls.DUPLICATE_ORDER.format(BASE=self.base_url, order_id="{order_id}")
 
     def __repr__(self):
         return f"<DigiCert Cert Client: '{self.base_url}'>"
-
 
     # PRODUCT SETTINGS
     def set_product_name(self, name: str):
@@ -120,19 +117,37 @@ class DigicertCertificates(CACertificatesInterface):
     def _list_orders(self, request_headers: dict, query: str = None):
         query = query if query else ''
         url = f"{self.list_orders_url}{query}"
-        print(url)
         response = requests.get(url=url, headers=request_headers)
         response.raise_for_status()
         return response
 
-    def list_orders(self, filters: dict = None):
-        """Get orders ordered by date created in descending order. Optionally filter on common_name, and date_created."""
+    def list_orders(self, sort: list = None, filters: dict = None):
+        """Get orders ordered by date created in descending order.
+        Optionally filter on common name, status, date ordered ... etc"""
         # https://dev.digicert.com/en/certcentral-apis/services-api/orders/list-orders.html
         headers = {}
         headers.update(self.auth_header)
         headers.update(self.static_headers.contenttype_json)
-        # TODO configure query string here!!!
-        r = self._list_orders(headers, query=filters)
+        # sort
+        _sort_by = set()
+        _sort_by.add('-date_created')  # always sort by most recent orders
+        if sort is not None:  # enable custom sorting; probably premature optimization?
+            for sort_field in sort: _sort_by.add(sort_field)
+        _sort_by = list(_sort_by)
+        sort_string = "sort="
+        sort_string += ",".join(_sort_by)
+        # filters
+        _filters = set()
+        if filters is not None and len(filters) > 0:
+            for k, v in filters.items(): _filters.add(f"filters[{k}]={v}")
+        filter_string = "&".join(_filters)
+        # final query string
+        query_string = ""
+        if len(filter_string) > 0 or len(sort_string) > 0: query_string = "?"
+        query_string += filter_string if len(filter_string) > 0 else ""
+        query_string += "&" if len(filter_string) > 0 and len(sort_string) > 0 else ""
+        query_string += sort_string if len(sort_string) > 0 else ""
+        r = self._list_orders(headers, query=query_string)
         return r.json()
 
     def _submit_csr(self, request_data: dict, request_headers: dict):
@@ -158,13 +173,75 @@ class DigicertCertificates(CACertificatesInterface):
         result = r.json()
         return result
 
+    @staticmethod
+    def _select_order_index_for_duplicate(filtered_orders: list):
+        """Pass in duplicate order candidates that have been filtered through _filter_eligible_duplicate_orders().
+        Return the index in the list of orders with the longest remaining days of validity."""
+        if len(filtered_orders) == 0:
+            return -1
+
+        selected_index = -1
+        max_days_left = filtered_orders[0]['certificate']['days_remaining']
+        for idx, order in enumerate(filtered_orders):
+            if order['certificate']['days_remaining'] > max_days_left:
+                selected_index = idx
+                max_days_left = order['certificate']['days_remaining']
+
+        return selected_index
+
+    @staticmethod
+    def _filter_eligible_duplicate_orders(orders: list, cert_type: DigitalCertificateUses, csr_sans: list, cn: str):
+        """Iterate through orders that we want as a duplicate certificate.
+        1) Keep all certificates with status 'issued'
+        2) Keep all orders that match the certificate type that we want.
+        3) Keep all orders where the SANs match.
+        """
+        drop_non_issued_orders = lambda order: order['status'] == 'issued'
+        drop_non_serverauth = lambda order: order['product']['type'].endswith('ssl_certificate')
+        drop_non_clientauth = lambda order: order['product']['type'] == 'client_certificate'
+        drop_non_codesign = lambda order: order['product']['type'] == 'code_signing_certificate'
+
+        # don't attempt to duplicate a cert that is not issued already
+        issued_orders = [x for x in filter(drop_non_issued_orders, orders)]
+
+        # filter cert type by use
+        if cert_type == DigitalCertificateUses.SERVER_AUTH:
+            single_cert_type_orders = [x for x in filter(drop_non_serverauth, issued_orders)]
+        elif cert_type == DigitalCertificateUses.CLIENT_AUTH:
+            single_cert_type_orders = [x for x in filter(drop_non_clientauth, issued_orders)]
+        else:  # cert_type == DigitalCertificateUses.CODE_SIGNING:
+            single_cert_type_orders = [x for x in filter(drop_non_codesign, issued_orders)]
+
+        # drop certs where sans do not match
+        sans_matched_orders = list()
+        for order in single_cert_type_orders:
+            order_sans = order['certificate']['dns_names']
+            # skip the order if they don't have the same number of sans
+            # Assumption: a csr will not be provided where the cn and one of the sans match
+            if len(order_sans)-1 != len(csr_sans): continue  # digicert puts the cn as a san value, so -1
+
+            # check that sans match between this csr and those on the order we are trying to duplicate
+            match = False
+            for san in order_sans:
+                if san == cn:
+                    match = True
+                    continue
+                sans_match = False if san not in csr_sans else True
+                if sans_match is False: break
+
+            if match is True:
+                sans_matched_orders.append(order)
+        return sans_matched_orders
+
     def _acquire_duplicate_order_candidate(self, submit_csr_request_data: dict):
-        """Find an order that matches CN and SANs of the supplied CSR and return it. Otherwise return None"""
-        print(submit_csr_request_data)
+        """
+        Return the order that matches the CN and SANs of the supplied CSR with the longest validity period.
+        Otherwise return None
+        """
         cn = submit_csr_request_data['certificate']['common_name']
         sans = submit_csr_request_data['certificate']['dns_names']
 
-        # TODO filter eligible duplicate orders
+        # TODO list all orders for this common_name within a timeframe
         past_date = datetime.datetime.now() - (
                 datetime.timedelta(days=self.SERVERAUTH_MAX_VALIDITY_DAYS) - datetime.timedelta(days=self.ROTATION_THRESHOLD)
         )
@@ -175,17 +252,32 @@ class DigicertCertificates(CACertificatesInterface):
             'common_name': cn, 'status': 'issued', 'date_created': f"{past_date_str}...{recent_date_str}"
         }
         result = self.list_orders(filters=filters)
-        # TODO select an order index for duplicate ordering
-        # TODO return a selected order from a collection of possible duplicates
 
+        if result.get('orders', None) is None: result.update({'orders': []})  # virtualize zero orders with empty list
+
+        filtered_candidates = DigicertCertificates._filter_eligible_duplicate_orders(
+            result['orders'], DigicertCertificates.CERTIFICATE_USE, sans, cn
+        )
+
+        selected = self._select_order_index_for_duplicate(filtered_candidates)
+        selected_order = filtered_candidates[selected] if selected > -1 else None
+        return selected_order
 
     def _submit_csr_for_duplicate(self, request_data: dict, request_headers: dict):
-        # in order to order a duplicate we must be able to
-        # DONE list_orders
+        """Attempt to order a duplicate certificate, if one exists."""
         order = self._acquire_duplicate_order_candidate(request_data)
         if order is None:
             print('duplicate order not found')
             return order
+
+        url = self.duplicate_order_url.format(order_id=order['id'])
+        response = requests.post(url=url, headers=request_headers, json=request_data)
+        response.raise_for_status()
+        # cache so that we can select the correct duplicate for download later on
+        DigicertCertificates.duplicate_csr = request_data['certificate']['csr']
+
+        result = response.json()
+        return result
 
     def _is_valid_user_csr(self, csr: str):
         header = '-----BEGIN CERTIFICATE REQUEST-----'
@@ -200,6 +292,8 @@ class DigicertCertificates(CACertificatesInterface):
 
     @classmethod
     def _extract_user_supplied_csr_fields(cls, csr: str):
+        """When the user supplies a CSR that is not an instance of autossl.keygen.CSR and instead str,
+        extract the fields from the user suppleid CSR so that we can make a web request for a certificate."""
         required_fields = dict()
         _csr = load_pem_x509_csr(csr.encode(encoding='utf-8'))
         _cn = _csr.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
@@ -211,6 +305,7 @@ class DigicertCertificates(CACertificatesInterface):
         return required_fields
 
     def submit_certificate_request(self, pem_csr: str | CSR):
+        """The main CSR submission controller/driver. Controls new and duplicate certificate ordering."""
         headers = {}
         headers.update(self.auth_header)
         headers.update(self.static_headers.contenttype_json)
@@ -256,7 +351,9 @@ class DigicertCertificates(CACertificatesInterface):
         return order_id
 
     def certificate_is_issued(self, id_):
+        """Check that the certificate for the given order id has been issued."""
         pass
 
     def fetch_certificate(self, id_):
+        """Download the full digital certificate chain."""
         pass
