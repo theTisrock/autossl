@@ -8,6 +8,7 @@ from .ca import CACertificatesInterface
 from enum import Enum
 from cryptography.x509 import load_pem_x509_csr, DNSName
 from cryptography.x509.oid import NameOID, ExtensionOID
+import datetime
 
 
 class DigicertDuplicatePolicies(Enum):
@@ -27,6 +28,7 @@ class DigicertCertificates(CACertificatesInterface):
     Not to be used for any other purpose."""
     DEFAULT_PRODUCT_NAME = 'ssl_basic'
     SERVERAUTH_MAX_VALIDITY_DAYS = 396
+    ROTATION_THRESHOLD = 30
     DUPLICATE_POLICY_CHOICES = DigicertDuplicatePolicies.str_choices()
     DUPLICATE_POLICY = DigicertDuplicatePolicies.PREFER
     CERTIFICATE_USE_CHOICES = DigitalCertificateUses.str_choices()
@@ -118,16 +120,19 @@ class DigicertCertificates(CACertificatesInterface):
     def _list_orders(self, request_headers: dict, query: str = None):
         query = query if query else ''
         url = f"{self.list_orders_url}{query}"
+        print(url)
         response = requests.get(url=url, headers=request_headers)
         response.raise_for_status()
         return response
 
-    def list_orders(self):
+    def list_orders(self, filters: dict = None):
         """Get orders ordered by date created in descending order. Optionally filter on common_name, and date_created."""
+        # https://dev.digicert.com/en/certcentral-apis/services-api/orders/list-orders.html
         headers = {}
         headers.update(self.auth_header)
         headers.update(self.static_headers.contenttype_json)
-        r = self._list_orders(headers)
+        # TODO configure query string here!!!
+        r = self._list_orders(headers, query=filters)
         return r.json()
 
     def _submit_csr(self, request_data: dict, request_headers: dict):
@@ -153,13 +158,34 @@ class DigicertCertificates(CACertificatesInterface):
         result = r.json()
         return result
 
-    def _submit_csr_for_duplicate(self, request_data: dict, request_headers: dict):
-        # in order to order a duplicate we must be able to
-        # TODO list_orders
+    def _acquire_duplicate_order_candidate(self, submit_csr_request_data: dict):
+        """Find an order that matches CN and SANs of the supplied CSR and return it. Otherwise return None"""
+        print(submit_csr_request_data)
+        cn = submit_csr_request_data['certificate']['common_name']
+        sans = submit_csr_request_data['certificate']['dns_names']
+
         # TODO filter eligible duplicate orders
+        past_date = datetime.datetime.now() - (
+                datetime.timedelta(days=self.SERVERAUTH_MAX_VALIDITY_DAYS) - datetime.timedelta(days=self.ROTATION_THRESHOLD)
+        )
+        past_date_str = past_date.strftime('%Y-%m-%dT00:00:00')
+        recent_date = datetime.datetime.now()
+        recent_date_str = recent_date.strftime('%Y-%m-%dT23:59:59')
+        filters = {
+            'common_name': cn, 'status': 'issued', 'date_created': f"{past_date_str}...{recent_date_str}"
+        }
+        result = self.list_orders(filters=filters)
         # TODO select an order index for duplicate ordering
         # TODO return a selected order from a collection of possible duplicates
-        pass
+
+
+    def _submit_csr_for_duplicate(self, request_data: dict, request_headers: dict):
+        # in order to order a duplicate we must be able to
+        # DONE list_orders
+        order = self._acquire_duplicate_order_candidate(request_data)
+        if order is None:
+            print('duplicate order not found')
+            return order
 
     def _is_valid_user_csr(self, csr: str):
         header = '-----BEGIN CERTIFICATE REQUEST-----'
