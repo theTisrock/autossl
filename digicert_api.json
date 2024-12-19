@@ -1,0 +1,220 @@
+{
+  "uuid": "e9e5bc73-3b0d-4a5d-b839-0276980ca2a8",
+  "lastMigration": 33,
+  "name": "Digicert api",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "dfd2f873-e9d9-413b-85bd-0442754bd46d",
+      "type": "http",
+      "documentation": "Submit CSR for signing SUCCESS",
+      "method": "post",
+      "endpoint": "order/certificate/ssl_basic",
+      "responses": [
+        {
+          "uuid": "75b6b1ca-13d5-47d2-a095-ead94f188235",
+          "body": "{\n  \"id\": 123456,\n  \"requests\": [\n    {\n      \"id\": 321,\n      \"status\": \"pending\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "76e3d4b3-ccb5-4c9a-8c17-ef1993cbe3d8",
+      "type": "http",
+      "documentation": "List Orders",
+      "method": "get",
+      "endpoint": "order/certificate",
+      "responses": [
+        {
+          "uuid": "33e32304-a2db-4e18-b17c-3766ea489c27",
+          "body": "{\n  \"orders\": [\n    {\n      \"id\": 123456,\n      \"certificate\": {\n        \"id\": 104,\n        \"common_name\": \"example.com\",\n        \"dns_names\": [\n          \"example2.com\",\n          \"example3.com\"\n        ],\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"pending\",\n      \"is_renewed\": false,\n      \"date_created\": \"2018-10-16T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 112233,\n        \"name\": \"Epigyne Unwieldiness llc\"\n      },\n      \"validity_years\": 1,\n      \"disable_renewal_notifications\": false,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"DigiCert Inc.\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_plus\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_plus\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"example.org\",\n        \"dns_names\": [\n          \"sub.example.org\"\n        ],\n        \"valid_till\": \"2020-04-30\",\n        \"days_remaining\": 289,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2019-04-30T18:02:50+00:00\",\n      \"organization\": [],\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_dv_geotrust\",\n        \"name\": \"GeoTrust Standard DV\",\n        \"type\": \"dv_ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_dv_geotrust\"\n    }\n  ],\n  \"page\": {\n    \"total\": 31,\n    \"limit\": 0,\n    \"offset\": 0\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "filters[common_name]",
+              "value": "foo.com",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "deaacec3-74b6-4c98-b949-054f451d73b7",
+          "body": "{\n  \"orders\": [\n    {\n      \"id\": 123456,\n      \"certificate\": {\n        \"id\": 104,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"disable_renewal_notifications\": false,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"DigiCert Inc.\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123457,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\",\n          \"bar.com\"\n        ],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123458,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\"\n        ],\n        \"valid_till\": \"2025-12-01\",\n        \"days_remaining\": 299,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    },\n    {\n      \"id\": 123459,\n      \"certificate\": {\n        \"id\": 105,\n        \"common_name\": \"foo.com\",\n        \"dns_names\": [\n          \"foo.com\"\n        ],\n        \"valid_till\": \"2025-12-02\",\n        \"days_remaining\": 300,\n        \"signature_hash\": \"sha256\"\n      },\n      \"status\": \"issued\",\n      \"is_renewed\": false,\n      \"date_created\": \"2024-12-01T17:29:56+00:00\",\n      \"organization\": {\n        \"id\": 123,\n        \"name\": \"ACME Corporation\"\n      },\n      \"validity_years\": 1,\n      \"container\": {\n        \"id\": 14,\n        \"name\": \"CertCentral\"\n      },\n      \"product\": {\n        \"name_id\": \"ssl_basic\",\n        \"name\": \"Standard SSL\",\n        \"type\": \"ssl_certificate\"\n      },\n      \"has_duplicates\": false,\n      \"product_name_id\": \"ssl_basic\"\n    }\n  ],\n  \"page\": {\n    \"total\": 31,\n    \"limit\": 0,\n    \"offset\": 0\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "filters.common_name",
+              "value": "foo.com",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "query",
+              "modifier": "filters.date_created",
+              "value": "2023-12-17T00:00:00...2024-12-17T23:59:59",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "query",
+              "modifier": "filters.status",
+              "value": "issued",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "query",
+              "modifier": "sort",
+              "value": "-date_created",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "564c8d34-cd1d-4632-88a7-b4ae3c6f2710",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "order/certificate/123459/duplicate",
+      "responses": [
+        {
+          "uuid": "72549f31-aaef-4e25-8922-020000e081e9",
+          "body": "{\n  \"id\": 123459,\n  \"requests\": [\n    {\n      \"id\": 332211\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "dfd2f873-e9d9-413b-85bd-0442754bd46d"
+    },
+    {
+      "type": "route",
+      "uuid": "76e3d4b3-ccb5-4c9a-8c17-ef1993cbe3d8"
+    },
+    {
+      "type": "route",
+      "uuid": "564c8d34-cd1d-4632-88a7-b4ae3c6f2710"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}

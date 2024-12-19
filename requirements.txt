@@ -1,6 +1,8 @@
 cryptography
+requests
 tox
 pytest
+freezegun
 setuptools
 wheel
 twine
