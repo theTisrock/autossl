@@ -44,7 +44,7 @@
       "type": "http",
       "documentation": "List Orders",
       "method": "get",
-      "endpoint": "order/certificate",
+      "endpoint": "order/certificate/",
       "responses": [
         {
           "uuid": "33e32304-a2db-4e18-b17c-3766ea489c27",
@@ -120,33 +120,6 @@
           "default": false,
           "crudKey": "id",
           "callbacks": []
-        },
-        {
-          "uuid": "60590c4a-4720-4408-9b1d-cd95192aeb49",
-          "body": "{\n  \"id\": 123456,\n  \"certificate\": {\n    \"common_name\": \"foo.com\",\n    \"dns_names\": [\n      \"foo.com\"\n    ],\n    \"date_created\": \"2024-12-17T18:02:50+00:00\",\n    \"date_issued\": \"2024-12-17T20:01:45+00:00\",\n    \"valid_from\": \"2024-12-17\",\n    \"valid_till\": \"2025-12-17\",\n    \"days_remaining\": 365,\n    \"csr\": \"\\\"-----BEGIN CERTIFICATE REQUEST-----\\\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\\\nHvof4Vk1WA==\\\\n-----END CERTIFICATE REQUEST-----\\\")\",\n    \"organization\": {\n      \"id\": 112233\n    },\n    \"organization_units\": [\n      \"Not Fake Company Inc.\"\n    ],\n    \"server_platform\": {\n      \"id\": -1,\n      \"name\": \"OTHER\",\n      \"install_url\": \"http://www.digicert.com/SSL-certificate-installation.htm\",\n      \"csr_url\": \"http://www.digicert.com/csr-creation.htm\"\n    },\n    \"signature_hash\": \"sha256\",\n    \"key_size\": 2048,\n    \"user_id\": 12345\n  },\n  \"status\": \"issued\",\n  \"is_renewal\": false,\n  \"date_created\": \"2024-12-17T18:02:50+00:00\",\n  \"organization\": {\n    \"id\": 112233,\n    \"name\": \"ACME Corporation\",\n    \"assumed_name\": \"ACME Corporation\",\n    \"display_name\": \"ACME Corporation\",\n    \"city\": \"Minneapolis\",\n    \"state\": \"Minnesota\",\n    \"country\": \"us\"\n  },\n  \"validity_years\": 1,\n  \"disable_renewal_notifications\": false,\n  \"auto_renew\": 0,\n  \"auto_reissue\": 0,\n  \"container\": {\n    \"id\": 15,\n    \"name\": \"History Department\",\n    \"is_active\": true\n  },\n  \"product\": {\n    \"name_id\": \"ssl_basic\",\n    \"name\": \"Standard SSL\",\n    \"type\": \"ssl_certificate\",\n    \"validation_type\": \"ov\",\n    \"validation_name\": \"OV\",\n    \"validation_description\": \"Normal Organization Validation\",\n    \"csr_required\": true\n  },\n  \"organization_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"technical_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"user\": {\n    \"id\": 44,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@digicert.com\"\n  },\n  \"purchased_dns_names\": 1,\n  \"requests\": [\n    {\n      \"id\": 198,\n      \"date\": \"2018-10-16T20:05:28+00:00\",\n      \"type\": \"new_request\",\n      \"status\": \"pending\",\n      \"comments\": \"Certificate comment.\"\n    }\n  ],\n  \"is_out_of_contract\": false,\n  \"payment_method\": \"balance\",\n  \"product_name_id\": \"ssl_basic\",\n  \"custom_fields\": [\n    {\n      \"metadata_id\": 12,\n      \"label\": \"Invoice #\",\n      \"value\": \"123456\"\n    }\n  ],\n  \"disable_issuance_email\": false\n}",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [
-            {
-              "target": "path",
-              "modifier": "",
-              "value": "123456",
-              "invert": false,
-              "operator": "equals"
-            }
-          ],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": false,
-          "crudKey": "id",
-          "callbacks": []
         }
       ],
       "responseMode": null,
@@ -185,28 +158,63 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "760def65-32a0-4135-94ee-2cc4b4163448",
+      "uuid": "56a1ed97-382f-42b2-8dd1-68255a1d4d5f",
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": "order/certificate/123456",
+      "endpoint": "order/certificate/:orderid",
       "responses": [
         {
-          "uuid": "79da2335-4e2c-4fc6-9b96-5edb04bf31e8",
-          "body": "{\n  \"id\": 123456,\n  \"certificate\": {\n    \"common_name\": \"foo.com\",\n    \"dns_names\": [\n      \"foo.com\"\n    ],\n    \"date_created\": \"2024-12-17T18:02:50+00:00\",\n    \"date_issued\": \"2024-12-17T20:01:45+00:00\",\n    \"valid_from\": \"2024-12-17\",\n    \"valid_till\": \"2025-12-17\",\n    \"days_remaining\": 365,\n    \"csr\": \"\\\"-----BEGIN CERTIFICATE REQUEST-----\\\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\\\nHvof4Vk1WA==\\\\n-----END CERTIFICATE REQUEST-----\\\")\",\n    \"organization\": {\n      \"id\": 112233\n    },\n    \"organization_units\": [\n      \"Not Fake Company Inc.\"\n    ],\n    \"server_platform\": {\n      \"id\": -1,\n      \"name\": \"OTHER\",\n      \"install_url\": \"http://www.digicert.com/SSL-certificate-installation.htm\",\n      \"csr_url\": \"http://www.digicert.com/csr-creation.htm\"\n    },\n    \"signature_hash\": \"sha256\",\n    \"key_size\": 2048,\n    \"user_id\": 12345\n  },\n  \"status\": \"issued\",\n  \"is_renewal\": false,\n  \"date_created\": \"2019-04-30T18:02:50+00:00\",\n  \"organization\": {\n    \"id\": 112233,\n    \"name\": \"ACME Corporation\",\n    \"assumed_name\": \"ACME Corporation\",\n    \"display_name\": \"ACME Corporation\",\n    \"city\": \"Minneapolis\",\n    \"state\": \"Minnesota\",\n    \"country\": \"us\"\n  },\n  \"validity_years\": 1,\n  \"disable_renewal_notifications\": false,\n  \"auto_renew\": 0,\n  \"auto_reissue\": 0,\n  \"container\": {\n    \"id\": 15,\n    \"name\": \"History Department\",\n    \"is_active\": true\n  },\n  \"product\": {\n    \"name_id\": \"ssl_basic\",\n    \"name\": \"Standard SSL\",\n    \"type\": \"ssl_certificate\",\n    \"validation_type\": \"ov\",\n    \"validation_name\": \"OV\",\n    \"validation_description\": \"Normal Organization Validation\",\n    \"csr_required\": true\n  },\n  \"organization_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"technical_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"user\": {\n    \"id\": 44,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@digicert.com\"\n  },\n  \"purchased_dns_names\": 1,\n  \"requests\": [\n    {\n      \"id\": 198,\n      \"date\": \"2018-10-16T20:05:28+00:00\",\n      \"type\": \"new_request\",\n      \"status\": \"pending\",\n      \"comments\": \"Certificate comment.\"\n    }\n  ],\n  \"is_out_of_contract\": false,\n  \"payment_method\": \"balance\",\n  \"product_name_id\": \"ssl_plus\",\n  \"custom_fields\": [\n    {\n      \"metadata_id\": 12,\n      \"label\": \"Invoice #\",\n      \"value\": \"123456\"\n    }\n  ],\n  \"disable_issuance_email\": false\n}",
+          "uuid": "b9ba23a6-afa0-4835-bfa8-a31d1a5cbeb4",
+          "body": "{\n  \"id\": 123456,\n  \"certificate\": {\n    \"common_name\": \"foo.com\",\n    \"dns_names\": [\n      \"foo.com\"\n    ],\n    \"date_created\": \"2024-12-17T18:02:50+00:00\",\n    \"date_issued\": \"2024-12-17T20:01:45+00:00\",\n    \"valid_from\": \"2024-12-17\",\n    \"valid_till\": \"2025-12-17\",\n    \"days_remaining\": 365,\n    \"csr\": \"\\\"-----BEGIN CERTIFICATE REQUEST-----\\\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\\\nHvof4Vk1WA==\\\\n-----END CERTIFICATE REQUEST-----\\\")\",\n    \"organization\": {\n      \"id\": 112233\n    },\n    \"organization_units\": [\n      \"Not Fake Company Inc.\"\n    ],\n    \"server_platform\": {\n      \"id\": -1,\n      \"name\": \"OTHER\",\n      \"install_url\": \"http://www.digicert.com/SSL-certificate-installation.htm\",\n      \"csr_url\": \"http://www.digicert.com/csr-creation.htm\"\n    },\n    \"signature_hash\": \"sha256\",\n    \"key_size\": 2048,\n    \"user_id\": 12345\n  },\n  \"status\": \"issued\",\n  \"is_renewal\": false,\n  \"date_created\": \"2024-12-17T18:02:50+00:00\",\n  \"organization\": {\n    \"id\": 112233,\n    \"name\": \"Epigyne Unwieldiness llc\",\n    \"assumed_name\": \"Epigyne Unwieldiness\",\n    \"display_name\": \"Epigyne Unwieldiness llc (Epigyne Unwieldiness)\",\n    \"city\": \"Minneapolis\",\n    \"state\": \"Minnesota\",\n    \"country\": \"us\"\n  },\n  \"validity_years\": 1,\n  \"disable_renewal_notifications\": false,\n  \"auto_renew\": 0,\n  \"auto_reissue\": 0,\n  \"container\": {\n    \"id\": 15,\n    \"name\": \"History Department\",\n    \"is_active\": true\n  },\n  \"product\": {\n    \"name_id\": \"ssl_basic\",\n    \"name\": \"Standard SSL\",\n    \"type\": \"ssl_certificate\",\n    \"validation_type\": \"ov\",\n    \"validation_name\": \"OV\",\n    \"validation_description\": \"Normal Organization Validation\",\n    \"csr_required\": true\n  },\n  \"organization_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"technical_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"user\": {\n    \"id\": 44,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@digicert.com\"\n  },\n  \"purchased_dns_names\": 2,\n  \"requests\": [\n    {\n      \"id\": 198,\n      \"date\": \"2024-12-17T20:05:28+00:00\",\n      \"type\": \"new_request\",\n      \"status\": \"pending\",\n      \"comments\": \"Certificate comment.\"\n    }\n  ],\n  \"is_out_of_contract\": false,\n  \"payment_method\": \"balance\",\n  \"product_name_id\": \"ssl_basic\",\n  \"custom_fields\": [\n    {\n      \"metadata_id\": 12,\n      \"label\": \"Invoice #\",\n      \"value\": \"123456\"\n    }\n  ],\n  \"disable_issuance_email\": false\n}",
           "latency": 0,
           "statusCode": 200,
-          "label": "",
+          "label": "order status check: issued",
           "headers": [],
           "bodyType": "INLINE",
           "filePath": "",
           "databucketID": "",
           "sendFileAsBody": false,
-          "rules": [],
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "orderid",
+              "value": "123456",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
           "rulesOperator": "OR",
           "disableTemplating": false,
           "fallbackTo404": false,
           "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "e0384fc1-89d2-422d-9b30-731b9272dd91",
+          "body": "{\n  \"id\": 123457,\n  \"certificate\": {\n    \"common_name\": \"foo.com\",\n    \"dns_names\": [\n      \"foo.com\"\n    ],\n    \"date_created\": \"2024-12-17T18:02:50+00:00\",\n    \"date_issued\": \"2024-12-17T20:01:45+00:00\",\n    \"valid_from\": \"2024-12-17\",\n    \"valid_till\": \"2025-12-17\",\n    \"days_remaining\": 365,\n    \"csr\": \"\\\"-----BEGIN CERTIFICATE REQUEST-----\\\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\\\nHvof4Vk1WA==\\\\n-----END CERTIFICATE REQUEST-----\\\")\",\n    \"organization\": {\n      \"id\": 112233\n    },\n    \"organization_units\": [\n      \"Not Fake Company Inc.\"\n    ],\n    \"server_platform\": {\n      \"id\": -1,\n      \"name\": \"OTHER\",\n      \"install_url\": \"http://www.digicert.com/SSL-certificate-installation.htm\",\n      \"csr_url\": \"http://www.digicert.com/csr-creation.htm\"\n    },\n    \"signature_hash\": \"sha256\",\n    \"key_size\": 2048,\n    \"user_id\": 12345\n  },\n  \"status\": \"needs_approval\",\n  \"is_renewal\": false,\n  \"date_created\": \"2024-12-17T18:02:50+00:00\",\n  \"organization\": {\n    \"id\": 112233,\n    \"name\": \"Epigyne Unwieldiness llc\",\n    \"assumed_name\": \"Epigyne Unwieldiness\",\n    \"display_name\": \"Epigyne Unwieldiness llc (Epigyne Unwieldiness)\",\n    \"city\": \"Minneapolis\",\n    \"state\": \"Minnesota\",\n    \"country\": \"us\"\n  },\n  \"validity_years\": 1,\n  \"disable_renewal_notifications\": false,\n  \"auto_renew\": 0,\n  \"auto_reissue\": 0,\n  \"container\": {\n    \"id\": 15,\n    \"name\": \"History Department\",\n    \"is_active\": true\n  },\n  \"product\": {\n    \"name_id\": \"ssl_basic\",\n    \"name\": \"Standard SSL\",\n    \"type\": \"ssl_certificate\",\n    \"validation_type\": \"ov\",\n    \"validation_name\": \"OV\",\n    \"validation_description\": \"Normal Organization Validation\",\n    \"csr_required\": true\n  },\n  \"organization_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"technical_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"user\": {\n    \"id\": 44,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@digicert.com\"\n  },\n  \"purchased_dns_names\": 2,\n  \"requests\": [\n    {\n      \"id\": 198,\n      \"date\": \"2024-12-17T20:05:28+00:00\",\n      \"type\": \"new_request\",\n      \"status\": \"pending\",\n      \"comments\": \"Certificate comment.\"\n    }\n  ],\n  \"is_out_of_contract\": false,\n  \"payment_method\": \"balance\",\n  \"product_name_id\": \"ssl_basic\",\n  \"custom_fields\": [\n    {\n      \"metadata_id\": 12,\n      \"label\": \"Invoice #\",\n      \"value\": \"123456\"\n    }\n  ],\n  \"disable_issuance_email\": false\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "order status check: needs approval",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "orderid",
+              "value": "123457",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
           "crudKey": "id",
           "callbacks": []
         }
@@ -231,7 +239,7 @@
     },
     {
       "type": "route",
-      "uuid": "760def65-32a0-4135-94ee-2cc4b4163448"
+      "uuid": "56a1ed97-382f-42b2-8dd1-68255a1d4d5f"
     }
   ],
   "proxyMode": false,
