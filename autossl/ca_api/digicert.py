@@ -69,6 +69,7 @@ class DigicertCertificates(CACertificatesInterface):
         self.submit_csr_url = self.urls.SUBMIT_CSR.format(BASE=self.base_url, product_name="{product_name}")
         self.list_orders_url = self.urls.LIST_ORDERS.format(BASE=self.base_url)
         self.duplicate_order_url = self.urls.DUPLICATE_ORDER.format(BASE=self.base_url, order_id="{order_id}")
+        self.order_info_url = self.urls.ORDER_INFO.format(BASE=self.base_url, order_id="{order_id}")
 
     def __repr__(self):
         return f"<DigiCert Cert Client: '{self.base_url}'>"
@@ -114,6 +115,18 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
+    def order_info(self, order_id: str):
+        """Get all certificate info for an order_id"""
+        headers = {}
+        headers.update(self.auth_header)
+        headers.update(self.static_headers.contenttype_json)
+
+        response = requests.get(url=self.order_info_url.format(order_id=order_id), headers=headers)
+        response.raise_for_status()
+
+        result = response.json()
+        return result
+
     def _list_orders(self, request_headers: dict, query: str = None):
         query = query if query else ''
         url = f"{self.list_orders_url}{query}"

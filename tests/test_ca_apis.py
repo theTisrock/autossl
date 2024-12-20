@@ -36,6 +36,15 @@ class TestDigicertCertificatesClient(object):
         print(actual)
         assert actual['orders'] == list_orders['orders']
 
+    @pytest.mark.parametrize("order_id,cn", [(123456, 'foo.com', )])
+    def test_order_info(self, order_id, cn):
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        actual = digicert.order_info(str(order_id))
+        assert actual['id'] == order_id
+        assert actual['certificate']['common_name'] == cn
+        assert cn in actual['certificate']['dns_names']
+
+    # MAIN API
     @pytest.mark.parametrize("cn,sans,csr_type,dupe_policy,expected_order", [
         ('foo.com', ['www.foo.com', 'bar.com', 'www.bar.com'], CSR, 'new', 123456, ),  # autossl supplied csr w/ sans
         ('foo.com', [], CSR, 'new', 123456, ),  # autossl supplied csr w/o sans
