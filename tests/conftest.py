@@ -24,7 +24,8 @@ def csr_with_sans():
 
 @pytest.fixture(scope='function')
 def csr_without_sans():
-    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"  # foo.com
+    # foo.com
+    test_csr = ("-----BEGIN CERTIFICATE REQUEST-----\n"
                 "MIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\n"
                 "BQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\n"
                 "NetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\n"
