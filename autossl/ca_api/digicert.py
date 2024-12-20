@@ -115,8 +115,8 @@ class DigicertCertificates(CACertificatesInterface):
         cls.CERTIFICATE_USE = getattr(DigitalCertificateUses, certificate_type.upper())
 
     # API CALLS
-    def order_info(self, order_id: str):
-        """Get all certificate info for an order_id"""
+    def order_info(self, order_id: int):
+        """Get certificate info for an order_id"""
         headers = {}
         headers.update(self.auth_header)
         headers.update(self.static_headers.contenttype_json)
@@ -363,9 +363,12 @@ class DigicertCertificates(CACertificatesInterface):
         order_id = result['id']
         return order_id
 
-    def certificate_is_issued(self, id_):
+    def certificate_is_issued(self, order_id: int):
         """Check that the certificate for the given order id has been issued."""
-        pass
+        results = self.order_info(order_id)
+        assert order_id == results['id']
+        print(f"DigiCert order {order_id} returned a status of {results['status']}.")
+        return results['status'] == 'issued'
 
     def fetch_certificate(self, id_):
         """Download the full digital certificate chain."""

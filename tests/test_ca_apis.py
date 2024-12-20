@@ -67,9 +67,12 @@ class TestDigicertCertificatesClient(object):
         actual = digicert.submit_certificate_request(csr)
         assert actual == expected_order
 
-    def test_is_issued(self):
+    @pytest.mark.parametrize("order_id,expected", [(123456, True, ), (123457, False, )])
+    def test_is_issued(self, order_id, expected):
         """Test that the certificate has been issued"""
-        pass
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        actual = digicert.certificate_is_issued(order_id)
+        assert actual == expected
 
     def test_download(self):
         """Test downloading the certificate chain."""
