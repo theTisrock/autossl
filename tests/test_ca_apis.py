@@ -79,6 +79,7 @@ class TestDigicertCertificatesClient(object):
         # TODO duplicate order
         digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
         actual = digicert.fetch_certificate(123456)
+        assert isinstance(actual, tuple)
         assert isinstance(actual[0], bytes)
         assert isinstance(actual[1], bytes)
         assert isinstance(actual[2], bytes)

@@ -412,7 +412,7 @@ class DigicertCertificates(CACertificatesInterface):
 
     def fetch_certificate(self, order_id: int):
         """Download the full digital certificate chain without leading or trailing white space.
-        Output should be in bytes since the cert should be loaded into a DeployableCertificate object."""
+        Returned as tuple(bytes(domain), bytes(ica), bytes(root))"""
         headers = dict()
         headers.update(self.static_headers.accept_zip)
         headers.update(self.static_headers.contenttype_json)
