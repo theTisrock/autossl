@@ -1,8 +1,11 @@
+from idlelib.iomenu import encoding
+from pprint import pprint
+
 import requests
 from requests.exceptions import HTTPError
 from autossl.keygen import CSR
 from .ca import DigitalCertificateUses
-import os
+import os, re
 from .ca import CACertificatesInterface
 from enum import Enum
 from cryptography.x509 import load_pem_x509_csr, DNSName
@@ -70,6 +73,9 @@ class DigicertCertificates(CACertificatesInterface):
         self.list_orders_url = self.urls.LIST_ORDERS.format(BASE=self.base_url)
         self.duplicate_order_url = self.urls.DUPLICATE_ORDER.format(BASE=self.base_url, order_id="{order_id}")
         self.order_info_url = self.urls.ORDER_INFO.format(BASE=self.base_url, order_id="{order_id}")
+        self.download_cert_url = self.urls.DOWNLOAD_CERTIFICATE.format(
+            BASE=self.base_url, certificate_id="{certificate_id}"
+        )
 
     def __repr__(self):
         return f"<DigiCert Cert Client: '{self.base_url}'>"
@@ -370,6 +376,69 @@ class DigicertCertificates(CACertificatesInterface):
         print(f"DigiCert order {order_id} returned a status of {results['status']}.")
         return results['status'] == 'issued'
 
-    def fetch_certificate(self, id_):
-        """Download the full digital certificate chain."""
-        pass
+    def _fetch_pem_certificate_chain(self, certificate_id: int, request_headers: dict):
+        url = self.download_cert_url.format(certificate_id=certificate_id)
+
+        response = requests.get(url=url, headers=request_headers)
+        try:
+            response.raise_for_status()
+        except HTTPError as httperror:
+            if response.status_code in [403, 404]:
+                print(f"Failed to download the certificate. certificate_id:{certificate_id}")
+                raise response.raise_for_status()
+
+        whole_pem = response.content.decode(encoding='utf-8')
+        fullchain_pem_pattern = re.compile("^(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
+                                           "(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
+                                           "(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n*$")
+        match = re.match(fullchain_pem_pattern, whole_pem)
+        try:  # make sure we have all parts accounted for before we deliver the cert components
+            assert match is not None
+        except AssertionError:
+            raise ValueError("One or more certificates in the chain provided by DigiCert Inc may not be present.")
+
+        domain, ica, root = match.groups()
+        domain = domain.strip()
+        ica = ica.strip()
+        root = root.strip()
+
+        pem_cert_chain_components = (
+            domain.encode(encoding='utf-8'),
+            ica.encode(encoding='utf-8'),
+            root.encode(encoding='utf-8'),
+        )
+
+        return pem_cert_chain_components
+
+    def fetch_certificate(self, order_id: int):
+        """Download the full digital certificate chain without leading or trailing white space.
+        Output should be in bytes since the cert should be loaded into a DeployableCertificate object."""
+        headers = dict()
+        headers.update(self.static_headers.accept_zip)
+        headers.update(self.static_headers.contenttype_json)
+        headers.update(self.auth_header)
+
+        certificate_id = None
+        # if an order has duplicates select the certificate with the matching CSR
+        order = self.order_info(order_id)
+
+        # TODO duplicate orders
+        # if DigicertCertificates.duplicate_csr:  # implies a duplicate was just ordered
+        #     print("checking for duplicates")
+        #     duplicates = self.list_duplicates(order_id)
+        #
+        #     print("searching for duplicate that matches request using recent CSR")
+        #     for cert in duplicates['certificates']:
+        #         if cert['csr'] == self.duplicate_csr:
+        #             print("duplicate found")
+        #             certificate_id = cert['id']
+        #             break
+        #         else: print("duplicate not found")
+
+        if certificate_id is None:
+            print("duplicate not found, fetching the primary certificate")
+            certificate_id = order['certificate']['id']
+
+        chain = self._fetch_pem_certificate_chain(certificate_id, headers)
+        DigicertCertificates.duplicate_csr = None  # cleanup
+        return chain
