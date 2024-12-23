@@ -76,10 +76,18 @@ class TestDigicertCertificatesClient(object):
 
     def test_download(self):
         """Test downloading the certificate chain."""
-        # TODO duplicate order
         digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
         actual = digicert.fetch_certificate(123456)
         assert isinstance(actual, tuple)
         assert isinstance(actual[0], bytes)
         assert isinstance(actual[1], bytes)
         assert isinstance(actual[2], bytes)
+
+    def test_duplicate_download(self):
+        csr = CSR(RSAPrivateKey(), 'foo.com')
+        csr.finalize()
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        assert digicert.duplicate_csr is None
+        digicert.submit_certificate_request(csr)
+        pprint.pprint(digicert.duplicate_csr)
+        # assert digicert.duplicate_csr == None
