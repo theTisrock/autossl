@@ -1,6 +1,3 @@
-from idlelib.iomenu import encoding
-from pprint import pprint
-
 import requests
 from requests.exceptions import HTTPError
 from autossl.keygen import CSR
@@ -76,7 +73,6 @@ class DigicertCertificates(CACertificatesInterface):
         self.download_cert_url = self.urls.DOWNLOAD_CERTIFICATE.format(
             BASE=self.base_url, certificate_id="{certificate_id}"
         )
-
         # caching
         self.duplicate_csr = None
 
@@ -183,8 +179,7 @@ class DigicertCertificates(CACertificatesInterface):
         response.raise_for_status()
 
         result = response.json()
-        if len(result) == 0:
-            result['certificates'] = list()
+        if len(result) == 0: result['certificates'] = list()
 
         return result
 
@@ -204,7 +199,6 @@ class DigicertCertificates(CACertificatesInterface):
         except HTTPError as http_error:
             print(r.text)
             r.raise_for_status()
-
         # this is not a duplicate request, so clobber the previous csr so that downstream certificate download
         # doesn't try to fetch a potentially non-existent duplicate
         self.duplicate_csr = None
@@ -429,6 +423,27 @@ class DigicertCertificates(CACertificatesInterface):
 
         return pem_cert_chain_components
 
+    def _select_duplicate(self, order_id: int):
+        """During submit_csr, if a duplicate was ordered, it has been cached in this Digicert client instance under
+        thisinstance.duplicate_csr
+        After the duplicate is ordered and ready for download, the CSR used to order the cert (the cached CSR)
+        is used to select the properly matching certificate."""
+        print("checking for duplicates that matches the cached CSR.")
+        duplicates = self.list_duplicates(order_id)  # contains list of dupes with matching CSR at the end.
+
+        certificate_id = None
+        found = False
+        for cert in duplicates['certificates']:
+            if cert['csr'] == self.duplicate_csr:
+                print("Found CSR-matched duplicate.")
+                found = True
+                certificate_id = cert['id']  # selects cert id 123321
+                break
+        if not found: print("duplicate not found.")
+
+        self.duplicate_csr = None
+        return certificate_id  # return cert id
+
     def fetch_certificate(self, order_id: int):
         """Download the full digital certificate chain without leading or trailing white space.
         Returned as tuple(bytes(domain), bytes(ica), bytes(root))"""
@@ -437,28 +452,11 @@ class DigicertCertificates(CACertificatesInterface):
         headers.update(self.static_headers.contenttype_json)
         headers.update(self.auth_header)
 
-        certificate_id = None
-        # if an order has duplicates select the certificate with the matching CSR
-        order = self.order_info(order_id)
-
-        # TODO duplicate orders
-        if self.duplicate_csr:  # implies a duplicate was just ordered
-            print("checking for duplicates")
-            duplicates = self.list_duplicates(order_id)
-            pprint(duplicates)
-
-            print("searching for duplicate that matches request using recent CSR")
-            for cert in duplicates['certificates']:
-                if cert['csr'] == self.duplicate_csr:
-                    print("duplicate found")
-                    certificate_id = cert['id']
-                    break
-                else: print("duplicate not found")
-
+        order = self.order_info(order_id)  # calls order 123456
+        certificate_id = self._select_duplicate(order_id)
         if certificate_id is None:
-            print("duplicate not found, fetching the primary certificate")
             certificate_id = order['certificate']['id']
 
-        chain = self._fetch_pem_certificate_chain(certificate_id, headers)
-        self.duplicate_csr = None  # cleanup
+        print("fetching the certificate")
+        chain = self._fetch_pem_certificate_chain(certificate_id, headers)  # downloads cert id 123321
         return chain
