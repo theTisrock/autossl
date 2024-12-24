@@ -44,7 +44,7 @@
       "type": "http",
       "documentation": "List Orders",
       "method": "get",
-      "endpoint": "order/certificate",
+      "endpoint": "order/certificate/",
       "responses": [
         {
           "uuid": "33e32304-a2db-4e18-b17c-3766ea489c27",
@@ -156,6 +156,157 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "56a1ed97-382f-42b2-8dd1-68255a1d4d5f",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "order/certificate/:orderid",
+      "responses": [
+        {
+          "uuid": "b9ba23a6-afa0-4835-bfa8-a31d1a5cbeb4",
+          "body": "{\n  \"id\": 123456,\n  \"certificate\": {\n    \"id\": 123321,\n    \"common_name\": \"foo.com\",\n    \"dns_names\": [\n      \"foo.com\"\n    ],\n    \"date_created\": \"2024-12-17T18:02:50+00:00\",\n    \"date_issued\": \"2024-12-17T20:01:45+00:00\",\n    \"valid_from\": \"2024-12-17\",\n    \"valid_till\": \"2025-12-17\",\n    \"days_remaining\": 365,\n    \"csr\": {\n  \"csr\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\nHvof4Vk1WA==\\n-----END CERTIFICATE REQUEST-----\"\n},\n    \"organization\": {\n      \"id\": 112233\n    },\n    \"organization_units\": [\n      \"Not Fake Company Inc.\"\n    ],\n    \"server_platform\": {\n      \"id\": -1,\n      \"name\": \"OTHER\",\n      \"install_url\": \"http://www.digicert.com/SSL-certificate-installation.htm\",\n      \"csr_url\": \"http://www.digicert.com/csr-creation.htm\"\n    },\n    \"signature_hash\": \"sha256\",\n    \"key_size\": 2048,\n    \"user_id\": 12345\n  },\n  \"status\": \"issued\",\n  \"is_renewal\": false,\n  \"date_created\": \"2024-12-17T18:02:50+00:00\",\n  \"organization\": {\n    \"id\": 112233,\n    \"name\": \"Epigyne Unwieldiness llc\",\n    \"assumed_name\": \"Epigyne Unwieldiness\",\n    \"display_name\": \"Epigyne Unwieldiness llc (Epigyne Unwieldiness)\",\n    \"city\": \"Minneapolis\",\n    \"state\": \"Minnesota\",\n    \"country\": \"us\"\n  },\n  \"validity_years\": 1,\n  \"disable_renewal_notifications\": false,\n  \"auto_renew\": 0,\n  \"auto_reissue\": 0,\n  \"container\": {\n    \"id\": 15,\n    \"name\": \"History Department\",\n    \"is_active\": true\n  },\n  \"product\": {\n    \"name_id\": \"ssl_basic\",\n    \"name\": \"Standard SSL\",\n    \"type\": \"ssl_certificate\",\n    \"validation_type\": \"ov\",\n    \"validation_name\": \"OV\",\n    \"validation_description\": \"Normal Organization Validation\",\n    \"csr_required\": true\n  },\n  \"organization_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"technical_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"user\": {\n    \"id\": 44,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@digicert.com\"\n  },\n  \"purchased_dns_names\": 2,\n  \"requests\": [\n    {\n      \"id\": 198,\n      \"date\": \"2024-12-17T20:05:28+00:00\",\n      \"type\": \"new_request\",\n      \"status\": \"pending\",\n      \"comments\": \"Certificate comment.\"\n    }\n  ],\n  \"is_out_of_contract\": false,\n  \"payment_method\": \"balance\",\n  \"product_name_id\": \"ssl_basic\",\n  \"custom_fields\": [\n    {\n      \"metadata_id\": 12,\n      \"label\": \"Invoice #\",\n      \"value\": \"123456\"\n    }\n  ],\n  \"disable_issuance_email\": false\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "order status check: issued",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "orderid",
+              "value": "123456",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "e0384fc1-89d2-422d-9b30-731b9272dd91",
+          "body": "{\n  \"id\": 123457,\n  \"certificate\": {\n    \"common_name\": \"foo.com\",\n    \"dns_names\": [\n      \"foo.com\"\n    ],\n    \"date_created\": \"2024-12-17T18:02:50+00:00\",\n    \"date_issued\": \"2024-12-17T20:01:45+00:00\",\n    \"valid_from\": \"2024-12-17\",\n    \"valid_till\": \"2025-12-17\",\n    \"days_remaining\": 365,\n    \"csr\": \"\\\"-----BEGIN CERTIFICATE REQUEST-----\\\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\\\nHvof4Vk1WA==\\\\n-----END CERTIFICATE REQUEST-----\\\")\",\n    \"organization\": {\n      \"id\": 112233\n    },\n    \"organization_units\": [\n      \"Not Fake Company Inc.\"\n    ],\n    \"server_platform\": {\n      \"id\": -1,\n      \"name\": \"OTHER\",\n      \"install_url\": \"http://www.digicert.com/SSL-certificate-installation.htm\",\n      \"csr_url\": \"http://www.digicert.com/csr-creation.htm\"\n    },\n    \"signature_hash\": \"sha256\",\n    \"key_size\": 2048,\n    \"user_id\": 12345\n  },\n  \"status\": \"needs_approval\",\n  \"is_renewal\": false,\n  \"date_created\": \"2024-12-17T18:02:50+00:00\",\n  \"organization\": {\n    \"id\": 112233,\n    \"name\": \"Epigyne Unwieldiness llc\",\n    \"assumed_name\": \"Epigyne Unwieldiness\",\n    \"display_name\": \"Epigyne Unwieldiness llc (Epigyne Unwieldiness)\",\n    \"city\": \"Minneapolis\",\n    \"state\": \"Minnesota\",\n    \"country\": \"us\"\n  },\n  \"validity_years\": 1,\n  \"disable_renewal_notifications\": false,\n  \"auto_renew\": 0,\n  \"auto_reissue\": 0,\n  \"container\": {\n    \"id\": 15,\n    \"name\": \"History Department\",\n    \"is_active\": true\n  },\n  \"product\": {\n    \"name_id\": \"ssl_basic\",\n    \"name\": \"Standard SSL\",\n    \"type\": \"ssl_certificate\",\n    \"validation_type\": \"ov\",\n    \"validation_name\": \"OV\",\n    \"validation_description\": \"Normal Organization Validation\",\n    \"csr_required\": true\n  },\n  \"organization_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"technical_contact\": {\n    \"first_name\": \"Gia\",\n    \"last_name\": \"Booth\",\n    \"email\": \"gia.booth@inbox.com\",\n    \"job_title\": \"Clinical Laboratory Technician\",\n    \"telephone\": \"666-186-6450\",\n    \"telephone_extension\": \"736\"\n  },\n  \"user\": {\n    \"id\": 44,\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@digicert.com\"\n  },\n  \"purchased_dns_names\": 2,\n  \"requests\": [\n    {\n      \"id\": 198,\n      \"date\": \"2024-12-17T20:05:28+00:00\",\n      \"type\": \"new_request\",\n      \"status\": \"pending\",\n      \"comments\": \"Certificate comment.\"\n    }\n  ],\n  \"is_out_of_contract\": false,\n  \"payment_method\": \"balance\",\n  \"product_name_id\": \"ssl_basic\",\n  \"custom_fields\": [\n    {\n      \"metadata_id\": 12,\n      \"label\": \"Invoice #\",\n      \"value\": \"123456\"\n    }\n  ],\n  \"disable_issuance_email\": false\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "order status check: needs approval",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "orderid",
+              "value": "123457",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "7fa50819-a748-4caf-80f5-d6ee5c4be643",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "certificate/:certificate_id/download/format/:format",
+      "responses": [
+        {
+          "uuid": "9e1b33fa-0567-46fe-8fae-7b190cfe9802",
+          "body": "-----BEGIN CERTIFICATE-----\nMIID+TCCAuGgAwIBAgIUcN3rnkvKiEPbxObg/q+MAvrJvlIwDQYJKoZIhvcNAQEL\nBQAwgYsxCzAJBgNVBAYTAlVTMRcwFQYDVQQIDA5Ob3J0aCBDYXJvbGluYTESMBAG\nA1UEBwwJQXNoZXZpbGxlMRIwEAYDVQQKDAlBQ01FIENvcnAxDTALBgNVBAsMBHBy\nb2QxEDAOBgNVBAMMB2Zvby5jb20xGjAYBgkqhkiG9w0BCQEWC2ppbUBmb28uY29t\nMB4XDTI0MTIyMDIwMjIwN1oXDTI1MTIyMDIwMjIwN1owgYsxCzAJBgNVBAYTAlVT\nMRcwFQYDVQQIDA5Ob3J0aCBDYXJvbGluYTESMBAGA1UEBwwJQXNoZXZpbGxlMRIw\nEAYDVQQKDAlBQ01FIENvcnAxDTALBgNVBAsMBHByb2QxEDAOBgNVBAMMB2Zvby5j\nb20xGjAYBgkqhkiG9w0BCQEWC2ppbUBmb28uY29tMIIBIjANBgkqhkiG9w0BAQEF\nAAOCAQ8AMIIBCgKCAQEAvhmZCYL0vkkMl4xAYnFkacsXPxnA7gs4IsnRIvOjpiuc\nkwVKOBFceHehW4wlXatMqtVV3Y1WKLy7wfZjR3zXPlCEPsduOj5LoMV1cXO2bSYq\n9Nf5a85+6ydUSgO/5u4UwgXPJXd4ebJeuKb0TeUfLL36RuAJydsCHpYDBcj8pGd2\nmfHoPCkiHDJvBFck097kH/4sxuvZ+U0a194fzL0xS36SWU18TKfuFJBqQHUY+Ujh\nQCoKvUQPS8ubk9rfuML4T76BMrxTrOs5UDbL7JEgFTPXDGhm/sJ1rQ9RGox9dMhl\nTrb7CybvhejvSIwHP/p79WbMajFJ8hXOw27U73A4uwIDAQABo1MwUTAdBgNVHQ4E\nFgQUYoU17S3pEgQJfA0Xv9Xp7NvmsaQwHwYDVR0jBBgwFoAUYoU17S3pEgQJfA0X\nv9Xp7NvmsaQwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAHjiq\n/88BTnwFfnxtiuBxKbsfcw3uajvWxKicAHGwPtNNhzcxoT2iMN3QHf2fyAEsShvR\n+Nf6WHY+iQ340qudfjMHN/sdkOBqNj/FfYD3jJa7MN+l3R8TyJAT8hCc68Q0GohJ\nSaqbuWvEGj5K5vwb3/z5sFijzbv0SYfJsG/n2/oXj2KcQPKv+qUGniD141Mu9ftt\nkDb9JHSscVQECCx6CTBNVevfeUihUQkBE57p5i3GwDN/9sh22Mg8N3cCV0U3r62t\nPcX92elAKkBvgdLjXnMTqBAWCWrrLIfp3iQ3sjCt+VWD1MYTdN4UNeb7QSHuauhm\nTD7tafbGjeswEy8vvA==\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIEFzCCAv+gAwIBAgIQB/LzXIeod6967+lHmTUlvTANBgkqhkiG9w0BAQwFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD\nQTAeFw0yMTA0MTQwMDAwMDBaFw0zMTA0MTMyMzU5NTlaMFYxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxMDAuBgNVBAMTJ0RpZ2lDZXJ0IFRMUyBI\neWJyaWQgRUNDIFNIQTM4NCAyMDIwIENBMTB2MBAGByqGSM49AgEGBSuBBAAiA2IA\nBMEbxppbmNmkKaDp1AS12+umsmxVwP/tmMZJLwYnUcu/cMEFesOxnYeJuq20ExfJ\nqLSDyLiQ0cx0NTY8g3KwtdD3ImnI8YDEe0CPz2iHJlw5ifFNkU3aiYvkA8ND5b8v\nc6OCAYIwggF+MBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFAq8CCkXjKU5\nbXoOzjPHLrPt+8N6MB8GA1UdIwQYMBaAFAPeUDVW0Uy7ZvCj4hsbw5eyPdFVMA4G\nA1UdDwEB/wQEAwIBhjAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwdgYI\nKwYBBQUHAQEEajBoMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5j\nb20wQAYIKwYBBQUHMAKGNGh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNvbS9EaWdp\nQ2VydEdsb2JhbFJvb3RDQS5jcnQwQgYDVR0fBDswOTA3oDWgM4YxaHR0cDovL2Ny\nbDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdENBLmNybDA9BgNVHSAE\nNjA0MAsGCWCGSAGG/WwCATAHBgVngQwBATAIBgZngQwBAgEwCAYGZ4EMAQICMAgG\nBmeBDAECAzANBgkqhkiG9w0BAQwFAAOCAQEAR1mBf9QbH7Bx9phdGLqYR5iwfnYr\n6v8ai6wms0KNMeZK6BnQ79oU59cUkqGS8qcuLa/7Hfb7U7CKP/zYFgrpsC62pQsY\nkDUmotr2qLcy/JUjS8ZFucTP5Hzu5sn4kL1y45nDHQsFfGqXbbKrAjbYwrwsAZI/\nBKOLdRHHuSm8EdCGupK8JvllyDfNJvaGEwwEqonleLHBTnm8dqMLUeTF0J5q/hos\nVq4GNiejcxwIfZMy0MJEGdqN9A57HSgDKwmKdsp33Id6rHtSJlWncg+d0ohP/rEh\nxRqhqjn1VtvChMQ1H3Dau0bwhr9kAMQ+959GG50jBbl9s08PqUU643QwmA==\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD\nQTAeFw0wNjExMTAwMDAwMDBaFw0zMTExMTAwMDAwMDBaMGExCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IENBMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKPC3eQyaKl7hLOllsB\nCSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtxRuLWZscFs3YnFo97\nnh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmFaG5cIzJLv07A6Fpt\n43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvUX7Q6hL+hqkpMfT7P\nT19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrTC0LUq7dBMtoM1O/4\ngdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOvJwIDAQABo2MwYTAO\nBgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUA95QNVbR\nTLtm8KPiGxvDl7I90VUwHwYDVR0jBBgwFoAUA95QNVbRTLtm8KPiGxvDl7I90VUw\nDQYJKoZIhvcNAQEFBQADggEBAMucN6pIExIK+t1EnE9SsPTfrgT1eXkIoyQY/Esr\nhMAtudXH/vTBH1jLuG2cenTnmCmrEbXjcKChzUyImZOMkXDiqw8cvpOp/2PV5Adg\n06O/nVsJ8dWO41P0jmP6P6fbtGbfYmbW0W5BjfIttep3Sp+dWOIrWcBAI+0tKIJF\nPnlUkiaY4IBIqDfv8NZ5YBberOgOzW6sRBc4L0na4UU+Krk2U886UAb3LujEV0ls\nYSEY1QSteDwsOoBrp+uvFRTp2InBuThs4pFsiv9kuXclVzDAGySj4dzp30d8tbQk\nCAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----\n",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "certificate_id",
+              "value": "123321",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "params",
+              "modifier": "format",
+              "value": "pem_all",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "6e3f6167-46ce-4cad-9a29-75a589229df3",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "order/certificate/:orderid/duplicate",
+      "responses": [
+        {
+          "uuid": "4974d5ce-d089-4edc-8434-2e957a4a387d",
+          "body": "{\n  \"certificates\": [\n    {\n      \"id\": 123319,\n      \"thumbprint\": \"<thumbprint>\",\n      \"serial_number\": \"<serial_number>\",\n      \"common_name\": \"foo.com\",\n      \"dns_names\": [\n        \"foo.com\"\n      ],\n      \"status\": \"approved\",\n      \"date_created\": \"2024-12-17T21:01:40+00:00\",\n      \"valid_from\": \"2024-12-17\",\n      \"valid_till\": \"2025-12-17\",\n      \"days_remaining\": 111,\n      \"csr\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\nHvof4Vk1WY==\\n-----END CERTIFICATE REQUEST-----\",\n      \"server_platform\": {\n        \"id\": 45,\n        \"name\": \"nginx\",\n        \"install_url\": \"http://www.digicert.com/ssl-certificate-installation-nginx.htm\",\n        \"csr_url\": \"http://www.digicert.com/csr-creation-nginx.htm\"\n      },\n      \"signature_hash\": \"sha256\",\n      \"key_size\": 2048,\n      \"ca_cert_id\": \"1005\",\n      \"sub_id\": \"111\",\n      \"public_id\": \"<public_id>\",\n      \"archived\": \"0\",\n      \"user_id\": 2,\n      \"firstname\": \"Jan\",\n      \"lastname\": \"Sport\"\n    },\n    {\n      \"id\": 123320,\n      \"common_name\": \"foo.com\",\n      \"dns_names\": [\n        \"foo.com\"\n      ],\n      \"status\": \"approved\",\n      \"date_created\": \"2025-12-17T19:57:09+00:00\",\n      \"csr\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\nHvof4Vk1WX==\\n-----END CERTIFICATE REQUEST-----\", \n      \"server_platform\": {\n        \"id\": 45,\n        \"name\": \"nginx\",\n        \"install_url\": \"http://www.digicert.com/ssl-certificate-installation-nginx.htm\",\n        \"csr_url\": \"http://www.digicert.com/csr-creation-nginx.htm\"\n      },\n      \"signature_hash\": \"sha256\",\n      \"key_size\": 2048,\n      \"ca_cert_id\": \"1005\",\n      \"sub_id\": \"112\",\n      \"public_id\": \"<public_id>\",\n      \"archived\": \"0\",\n      \"user_id\": 5,\n      \"firstname\": \"John\",\n      \"lastname\": \"Someone\"\n    },\n    {\n      \"id\": 123321,\n      \"common_name\": \"foo.com\",\n      \"dns_names\": [\n        \"foo.com\"\n      ],\n      \"status\": \"approved\",\n      \"date_created\": \"2024-12-17T22:41:43+00:00\",\n      \"csr\": \"-----BEGIN CERTIFICATE REQUEST-----\\nMIICczCCAVsCAQAwEjEQMA4GA1UEAwwHZm9vLmNvbTCCASIwDQYJKoZIhvcNAQEB\\nBQADggEPADCCAQoCggEBALxzacrKKI36Um8Vy+y/wWv8TughvgyfwKRLBeSCxH/E\\nNetqM09luEvqrgxyr3bQowYUrh7wRsZXh+qQbjNwxWAIp5fXqHvj8jsvUsyK/W4q\\n6puauaZHEvPsAvr23PN65EOrQM09ClOSeoGyzo3Z4gaaz50mXt3fP4mKqpsJDxWR\\npIAyO4MqJCoU6wxv9n1Ob01Im9OW/+PdrLNS5qPiX5C8oKoJFWWbRYYuaKi8fkMw\\n8YgLLMQkjQaYAqtc3nDpFN6d/B91sUZykPh6IUYn663gALFwx33zAU9AisT0cXKV\\n66DVwTaR+HwzULtdvzZsNVKItraCDfwcm7vPyuNuxrECAwEAAaAcMBoGCSqGSIb3\\nDQEJDjENMAswCQYDVR0RBAIwADANBgkqhkiG9w0BAQsFAAOCAQEAM94Y5pzFVdw/\\nmGsGRYX/RJLr2HvWGlEWQ06CzXjKhqLSEWJsq+bGarY0IwQwtopTAZL1jHnz4eTT\\nM/u1Rwj/TrL4+ywwfXVg7bQ9QaqSkmKtPs1P/juwnFLDXXAyXLm/qF1ioFm+rr/0\\n1UhXk/xc+MT2lf3qaOnEvX3938pu0ytBBp56Do2alTQLgXxAd4h5GpuZ9z7a+xp+\\nU0l/NFoDgcerGZACvDwwXpMNYJN1UFa/SwobIv4QT/4ttEzsFgXpXjJZQfzJGz3V\\nDLmWVgrxJvC0cjq7jUQq1K5NRvvSVEkY/zscXkf0rypYj/yRrkdi/OgonHU2iPu4\\nHvof4Vk1WA==\\n-----END CERTIFICATE REQUEST-----\",\n      \"server_platform\": {\n        \"id\": 45,\n        \"name\": \"nginx\",\n        \"install_url\": \"http://www.digicert.com/ssl-certificate-installation-nginx.htm\",\n        \"csr_url\": \"http://www.digicert.com/csr-creation-nginx.htm\"\n      },\n      \"signature_hash\": \"sha256\",\n      \"key_size\": 2048,\n      \"ca_cert_id\": \"1005\",\n      \"sub_id\": \"113\",\n      \"public_id\": \"<public_id>\",\n      \"archived\": \"0\",\n      \"user_id\": 12,\n      \"firstname\": \"Jill\",\n      \"lastname\": \"Valentine\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Order a duplicate certificate",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "orderid",
+              "value": "123321",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -170,6 +321,18 @@
     {
       "type": "route",
       "uuid": "564c8d34-cd1d-4632-88a7-b4ae3c6f2710"
+    },
+    {
+      "type": "route",
+      "uuid": "56a1ed97-382f-42b2-8dd1-68255a1d4d5f"
+    },
+    {
+      "type": "route",
+      "uuid": "7fa50819-a748-4caf-80f5-d6ee5c4be643"
+    },
+    {
+      "type": "route",
+      "uuid": "6e3f6167-46ce-4cad-9a29-75a589229df3"
     }
   ],
   "proxyMode": false,

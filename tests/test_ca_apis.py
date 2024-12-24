@@ -36,6 +36,24 @@ class TestDigicertCertificatesClient(object):
         print(actual)
         assert actual['orders'] == list_orders['orders']
 
+    @pytest.mark.parametrize("order_id,cn", [(123456, 'foo.com', )])
+    def test_order_info(self, order_id, cn):
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        actual = digicert.order_info(str(order_id))
+        assert actual['id'] == order_id
+        assert actual['certificate']['common_name'] == cn
+        assert cn in actual['certificate']['dns_names']
+
+    def test_duplicate_selection(self, csr_without_sans, capsys):
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        # patch in the CSR
+        digicert.duplicate_csr = csr_without_sans
+        cert_id = digicert._select_duplicate(123456)
+        assert cert_id == 123321
+        capture = capsys.readouterr()
+        assert "Found CSR-matched duplicate." in capture.out
+
+    # MAIN API
     @pytest.mark.parametrize("cn,sans,csr_type,dupe_policy,expected_order", [
         ('foo.com', ['www.foo.com', 'bar.com', 'www.bar.com'], CSR, 'new', 123456, ),  # autossl supplied csr w/ sans
         ('foo.com', [], CSR, 'new', 123456, ),  # autossl supplied csr w/o sans
@@ -58,10 +76,32 @@ class TestDigicertCertificatesClient(object):
         actual = digicert.submit_certificate_request(csr)
         assert actual == expected_order
 
-    def test_is_issued(self):
+    @pytest.mark.parametrize("order_id,expected", [(123456, True, ), (123457, False, )])
+    def test_is_issued(self, order_id, expected):
         """Test that the certificate has been issued"""
-        pass
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        actual = digicert.certificate_is_issued(order_id)
+        assert actual == expected
 
     def test_download(self):
         """Test downloading the certificate chain."""
-        pass
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        actual = digicert.fetch_certificate(123456)
+        assert isinstance(actual, tuple)
+        assert isinstance(actual[0], bytes)
+        assert isinstance(actual[1], bytes)
+        assert isinstance(actual[2], bytes)
+
+    def test_duplicate_download(self, csr_without_sans, capsys):
+        digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
+        assert digicert.duplicate_csr is None
+        digicert.duplicate_csr = csr_without_sans
+        assert digicert.duplicate_csr is not None  # proves a duplicate order has been triggered
+        actual = digicert.fetch_certificate(123456)
+        capture = capsys.readouterr()
+        assert "Found CSR-matched duplicate." in capture.out
+        assert "fetching the certificate" in capture.out
+        assert isinstance(actual, tuple)
+        assert isinstance(actual[0], bytes)
+        assert isinstance(actual[1], bytes)
+        assert isinstance(actual[2], bytes)
