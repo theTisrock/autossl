@@ -49,7 +49,7 @@ class DigicertCertificates(CACertificatesInterface):
         contenttype_urlencoded = {"Content-Type": "application/x-www-form-urlencoded"}
         contenttype_json = {"Content-Type": "application/json"}
 
-    def __init__(self, org_id: int, base_url: str = urls.BASE, api_key: str = None):
+    def __init__(self, org_id: int = None, base_url: str = urls.BASE, api_key: str = None):
         """Communicates with DigiCert. Submits CSRs, checks cert status and fetches certificate chain.
         The interface is designed with serverAuth (typical) SSL certificate issuance in mind,
         though it may also handle clientAuth (MTLS) and Code Signing in the future."""
@@ -59,6 +59,10 @@ class DigicertCertificates(CACertificatesInterface):
             if not os.environ.get('DIGICERT_APIKEY', False): raise ValueError("API key not found.")
             self.auth_header['X-DC-DEVKEY'] = os.environ['DIGICERT_APIKEY']
         self.org_id = org_id
+        if org_id is None:
+            self.org_id = os.environ.get('DIGICERT_ORGID', None)
+            if not self.org_id:
+                raise ValueError("Must provide an org_id for digicert")
         # product settings
         self.product_name = self.DEFAULT_PRODUCT_NAME
         self.days_valid = self.SERVERAUTH_MAX_VALIDITY_DAYS

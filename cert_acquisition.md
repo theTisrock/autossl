@@ -1,5 +1,4 @@
 # Cryptographic Certificate Acquisition
-Certificate Rotation Automation chain:
 
 ### Keygen > [Cert Acquisition] > Distribution > Scan & Monitor
 
@@ -24,7 +23,6 @@ and hand the final Certificate back to you.
 * CA's are a mere implementation detail.
 * Remove the burden from your team to learn CA specifics.
 
-
 ###### Functional Features
 
 1. DigiCert RestAPI client that submits CSRs, checks issuance status and downloads the full certificate chain.
@@ -38,9 +36,80 @@ and hand the final Certificate back to you.
 * CSRs are accepted as text or as objects from this library.
 
 ##  <u>EXAMPLES</u>
-## CA Clients
 
-1. DigiCert
-2. TODO: Let's Encrypt???
+#### get a certificate from the CA
+
+```python
+from autossl.ca_api import DigicertCertificates
+from autossl.keygen import CSR, RSAPrivateKey
+import time
+
+org_id = 123
+ca = DigicertCertificates(org_id, api_key='<api key>')
+```
+##### use the autossl.keygen.CSR object ...
+```python
+# use the CSR from this library
+key = RSAPrivateKey()
+csr = CSR(key, 'foo.com')
+csr.add_san('www.foo.com')
+csr.country = 'US'
+csr.finalize()
+
+# for more info on how to build a CSR, see keygen.md
+```
+
+#### ... or bring your own CSR
+```python
+# remember to keep your private key handy
+with open('csr_file.pem', 'r') as file: 
+    csr = file.read()
+```
+
+#### fetch the certificate once it has been issued by the Certificate Authority
+```python
+order_id = ca.submit_certificate_request(csr)
+while not ca.certificate_is_issued(order_id):
+    # potentially infinite loop just for example
+    seconds = 5
+    time.sleep(seconds)
+
+certificate_chain = ca.fetch_certificate(order_id)
+domain, ica, root = certificate_chain  # tuple components are returned as bytes
+# now you should have your private key and all your certificate chain components that you'll need to deploy
+# see keygen.md for private object info. pkcs1 and pkcs8 are available as properties
+```
 
 ## Certificate Objects
+
+## CA Clients
+
+###### <u>DigiCert</u>
+```bash
+export DIGICERT_ORGID=<your org id>
+export DIGICERT_APIKEY=<your api key>
+```
+
+```python
+from autossl.ca_api import DigicertCertificates
+
+digicert = DigicertCertificates()
+
+# product settings
+# require - only order duplicates, new - only order new certificate, prefer - order duplicate, if not found order new
+digicert.set_duplicate_policy('new')
+digicert.set_product_name('ssl_basic')  # ssl_basic, ssl_plus
+digicert.set_days_valid(397)  # industry max is 397
+
+# secondary api calls - used to support the main api calls
+orders = digicert.list_orders()
+order_id = 123456
+order_info: dict = digicert.order_info(order_id)
+duplicates_for_order = digicert.list_duplicates(order_id)
+
+# main api calls
+order_id = digicert.submit_certificate_request(csr)
+if digicert.certificate_is_issued(order_id):
+    certificate_chain = digicert.fetch_certificate(order_id)
+domain_cert, ica_cert, root_cert = certificate_chain
+```
