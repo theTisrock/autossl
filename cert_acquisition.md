@@ -39,7 +39,7 @@ and hand the final Certificate back to you.
 
 ##  <u>EXAMPLES</u>
 
-#### get a certificate from the CA by generating one or using your own PEM CSR
+#### get a certificate from the CA
 
 ```python
 from autossl.ca_api import DigicertCertificates
@@ -68,7 +68,7 @@ with open('csr_file.pem', 'r') as file:
     csr = file.read()
 ```
 
-#### fetch the certificate once it is ready
+#### fetch the certificate once it has been issued by the Certificate Authority
 ```python
 order_id = ca.submit_certificate_request(csr)
 while not ca.certificate_is_issued(order_id):
