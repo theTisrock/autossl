@@ -1,5 +1,4 @@
 # Cryptographic Certificate Acquisition
-Certificate Rotation Automation chain:
 
 ### Keygen > [Cert Acquisition] > Distribution > Scan & Monitor
 
@@ -23,7 +22,6 @@ and hand the final Certificate back to you.
 * Automate your certificate deployments and renewals
 * CA's are a mere implementation detail.
 * Remove the burden from your team to learn CA specifics.
-
 
 ###### Functional Features
 
@@ -82,9 +80,36 @@ domain, ica, root = certificate_chain  # tuple components are returned as bytes
 # see keygen.md for private object info. pkcs1 and pkcs8 are available as properties
 ```
 
+## Certificate Objects
+
 ## CA Clients
 
-1. DigiCert
-2. TODO: Let's Encrypt???
+###### <u>DigiCert</u>
+```bash
+export DIGICERT_ORGID=<your org id>
+export DIGICERT_APIKEY=<your api key>
+```
 
-## Certificate Objects
+```python
+from autossl.ca_api import DigicertCertificates
+
+digicert = DigicertCertificates()
+
+# product settings
+# require - only order duplicates, new - only order new certificate, prefer - order duplicate, if not found order new
+digicert.set_duplicate_policy('new')
+digicert.set_product_name('ssl_basic')  # ssl_basic, ssl_plus
+digicert.set_days_valid(397)  # industry max is 397
+
+# secondary api calls - used to support the main api calls
+orders = digicert.list_orders()
+order_id = 123456
+order_info: dict = digicert.order_info(order_id)
+duplicates_for_order = digicert.list_duplicates(order_id)
+
+# main api calls
+order_id = digicert.submit_certificate_request(csr)
+if digicert.certificate_is_issued(order_id):
+    certificate_chain = digicert.fetch_certificate(order_id)
+domain_cert, ica_cert, root_cert = certificate_chain
+```
