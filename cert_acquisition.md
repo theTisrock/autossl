@@ -38,6 +38,50 @@ and hand the final Certificate back to you.
 * CSRs are accepted as text or as objects from this library.
 
 ##  <u>EXAMPLES</u>
+
+#### get a certificate from the CA by generating one or using your own PEM CSR
+
+```python
+from autossl.ca_api import DigicertCertificates
+from autossl.keygen import CSR, RSAPrivateKey
+import time
+
+org_id = 123
+ca = DigicertCertificates(org_id, api_key='<api key>')
+```
+##### use the autossl.keygen.CSR object ...
+```python
+# use the CSR from this library
+key = RSAPrivateKey()
+csr = CSR(key, 'foo.com')
+csr.add_san('www.foo.com')
+csr.country = 'US'
+csr.finalize()
+
+# for more info on how to build a CSR, see keygen.md
+```
+
+#### ... or bring your own CSR
+```python
+# remember to keep your private key handy
+with open('csr_file.pem', 'r') as file: 
+    csr = file.read()
+```
+
+#### fetch the certificate once it is ready
+```python
+order_id = ca.submit_certificate_request(csr)
+while not ca.certificate_is_issued(order_id):
+    # potentially infinite loop just for example
+    seconds = 5
+    time.sleep(seconds)
+
+certificate_chain = ca.fetch_certificate(order_id)
+domain, ica, root = certificate_chain  # tuple components are returned as bytes
+# now you should have your private key and all your certificate chain components that you'll need to deploy
+# see keygen.md for private object info. pkcs1 and pkcs8 are available as properties
+```
+
 ## CA Clients
 
 1. DigiCert
