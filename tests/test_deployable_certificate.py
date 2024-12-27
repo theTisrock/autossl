@@ -1,6 +1,7 @@
 import pytest
 from autossl.certificates import DeployableCertificate
 from cryptography.x509 import Certificate
+import re
 
 
 class TestDeployableCertificate:
@@ -30,3 +31,23 @@ class TestDeployableCertificate:
         assert b'END CERTIFICATE' in cert.root_pem
         assert cert.root_pem[-1] != b'\n'
         assert b'DigiCert Global Root CA' in cert.root_der
+
+    def test_pem_chain(self, certificate_chain):
+        cert = DeployableCertificate(certificate_chain)
+        str_pem = cert.pem.decode()
+        pem_chain_pattern = re.compile(
+            r"^-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----\n"
+            "-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----\n"
+            "-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----$"  # no trailing spaces
+        )
+        match = pem_chain_pattern.match(str_pem)
+        if match is None:
+            print(str_pem)
+            assert False
+
+    def test_der_chain(self, certificate_chain):
+        cert = DeployableCertificate(certificate_chain)
+        assert b'foo.com' in cert.der
+        assert b'DigiCert TLS Hybrid ECC SHA384 2020 CA1' in cert.der
+        assert b'DigiCert Global Root CA' in cert.der
+        assert cert.der[-1] != b'\n'

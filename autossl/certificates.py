@@ -146,3 +146,20 @@ class DeployableCertificate(object):
     def root_der(self, _):
         print("property is read-only")
         return
+
+    @property
+    def pem(self):
+        d = self.domain_pem.decode(encoding='utf-8')
+        i = self.ica_pem.decode(encoding='utf-8')
+        r = self.root_pem.decode(encoding='utf-8')
+        pem_cert = "{domain}\n{ica}\n{root}".format(domain=d, ica=i, root=r)
+        return pem_cert.encode(encoding='utf-8')
+
+    @pem.setter
+    def pem(self, _):
+        print("property is read-only")
+        return
+
+    @property
+    def der(self):
+        return self.domain_der + self.ica_der + self.root_der
