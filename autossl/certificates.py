@@ -1,10 +1,11 @@
 from idlelib.iomenu import encoding
 
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat import backends
 from autossl.keygen import RSAPrivateKey
-from cryptography.x509 import NameOID, load_pem_x509_certificate
+from cryptography.x509 import NameOID, load_pem_x509_certificate, Certificate
 import re
 
 
@@ -42,9 +43,10 @@ class DeployableCertificate(object):
         - A full certificate chain"""
         # TODO set the validated cert object to use for building out properties
         d, i, r = self._process_certificate_chain(certificate_chain)
-        self._domain_cert = d
-        self._ica_cert = i
-        self._root_cert = r
+        self._domain_cert: Certificate = d
+        self._ica_cert: Certificate = i
+        self._root_cert: Certificate = r
+        self._cn = self._domain_cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
         # TODO set the validated key object for building out cert properties
 
 
@@ -56,7 +58,9 @@ class DeployableCertificate(object):
         # TODO repr the hash algo
         # TODO repr sans by sans count
         # TODO repr serial number
-        pass
+        domain_cn = self._cn
+        serial_no = self._domain_cert.serial_number
+        return f"<DeployableCertificate cn:{domain_cn} serial:{serial_no}>"
 
     @classmethod
     def _process_certificate_chain(cls, certificate_chain: str):
@@ -73,9 +77,9 @@ class DeployableCertificate(object):
 
         domain, ica, root = parts
         try:
-            domain_certificate = load_pem_x509_certificate(domain.encode(encoding='utf-8'))
-            ica_certificate = load_pem_x509_certificate(ica.encode(encoding='utf-8'))
-            root_certificate = load_pem_x509_certificate(root.encode(encoding='utf-8'))
+            domain_certificate = load_pem_x509_certificate(domain.encode(encoding='utf-8'), backend=default_backend())
+            ica_certificate = load_pem_x509_certificate(ica.encode(encoding='utf-8'), backend=default_backend())
+            root_certificate = load_pem_x509_certificate(root.encode(encoding='utf-8'), backend=default_backend())
         except ValueError as ve:
             print("An error occurred while processing the deployable certificate chain.")
             raise ve
@@ -89,3 +93,56 @@ class DeployableCertificate(object):
         # TODO set a cryptography RSAPvtKey
         pass
 
+    @property
+    def domain_pem(self):
+        return self._domain_cert.public_bytes(serialization.Encoding.PEM)[:-1]
+
+    @domain_pem.setter
+    def domain_pem(self, _):
+        print("property is read-only")
+        return
+
+    @property
+    def domain_der(self):
+        return self._domain_cert.public_bytes(serialization.Encoding.DER)
+
+    @domain_der.setter
+    def domain_der(self, _):
+        print("property is read-only")
+        return
+
+    @property
+    def ica_pem(self):
+        return self._ica_cert.public_bytes(serialization.Encoding.PEM)[:-1]
+
+    @ica_pem.setter
+    def ica_pem(self, _):
+        print("property is read-only")
+        return
+
+    @property
+    def ica_der(self):
+        return self._ica_cert.public_bytes(serialization.Encoding.DER)
+
+    @ica_der.setter
+    def ica_der(self, _):
+        print("property is read-only")
+        return
+
+    @property
+    def root_pem(self):
+        return self._root_cert.public_bytes(serialization.Encoding.PEM)[:-1]
+
+    @root_pem.setter
+    def root_pem(self, _):
+        print("property is read-only")
+        return
+
+    @property
+    def root_der(self):
+        return self._root_cert.public_bytes(serialization.Encoding.DER)
+
+    @root_der.setter
+    def root_der(self, _):
+        print("property is read-only")
+        return
