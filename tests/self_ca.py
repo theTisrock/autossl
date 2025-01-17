@@ -13,6 +13,7 @@ class IntermediateCA(object):
         self.rsakey = self.generate_rsa_key()
         self.ca_key = authoritative_key
         self.issuer = authoritative_cert.subject
+        self.subject = None
         self.ca_cert = authoritative_cert
         self._cert = CertificateBuilder()
         self.is_signed = False
@@ -31,6 +32,7 @@ class IntermediateCA(object):
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Intermediate CA Corp"),
             x509.NameAttribute(NameOID.COMMON_NAME, self.cn)
         ])
+        self.subject = subject
 
         self._cert = self._cert.subject_name(subject)
         self._cert = self._cert.issuer_name(self.issuer)
@@ -178,25 +180,80 @@ class RootCA(object):
         return self._cert.public_bytes(serialization.Encoding.PEM)[:-1]
 
 
-def get_test_trust_chain():
+def get_test_trust_chain(cn, key):
     root_ca = RootCA()
     root_ca.generate_certificate()
-    pass
+    ica_ca = IntermediateCA(root_ca.pvtkey, root_ca.cert)
+    ica_ca.generate_certificate()
 
-if __name__ == '__main__':
-    print("creating root CA...")
-    root = RootCA()
-    root.generate_certificate()
-    print(root.pem)
-    print()
+    cert = CertificateBuilder()
+    subject = x509.Name([
+        x509.NameAttribute(NameOID.COUNTRY_NAME, 'US'),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, 'North Carolina'),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, 'Raleigh'),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'Acme Corportation'),
+        x509.NameAttribute(NameOID.COMMON_NAME, cn),
+    ])
 
-    print("creating the intermediate CA...")
-    ica = IntermediateCA(root.pvtkey, root.cert)
-    ica.generate_certificate()
-    print(ica.pem)
-    print()
+    cert = cert.subject_name(subject).issuer_name(ica_ca.subject).public_key(key.public_key())
+    cert = cert.serial_number(x509.random_serial_number())
+    cert = cert.not_valid_before(datetime.datetime.now(datetime.timezone.utc))
+    cert = cert.not_valid_after(
+        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=365)
+    )
+    cert = cert.add_extension(
+    x509.SubjectAlternativeName([x509.DNSName(cn)]),
+    critical=False)
+    cert = cert.add_extension(
+        x509.BasicConstraints(ca=False, path_length=None),
+        critical=True
+    )
 
-    print("creating leaf domain certificate issued by Intermediate CA...")
+    cert = cert.add_extension(
+        x509.KeyUsage(
+            digital_signature=True,
+            content_commitment=False,
+            key_encipherment=True,
+            data_encipherment=False,
+            key_agreement=False,
+            key_cert_sign=False,
+            crl_sign=True,
+            encipher_only=False,
+            decipher_only=False,
+        ),
+        critical=True,
+    ).add_extension(
+            x509.ExtendedKeyUsage([
+                x509.ExtendedKeyUsageOID.CLIENT_AUTH,
+                x509.ExtendedKeyUsageOID.SERVER_AUTH,
+            ]),
+            critical=False,
+    ).add_extension(
+        x509.SubjectKeyIdentifier.from_public_key(key.public_key()),
+        critical=False
+    ).add_extension(
+    x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+        ica_ca.cert.extensions.get_extension_for_class(x509.SubjectKeyIdentifier).value
+    ),
+    critical=False
+    )
+
+    cert = cert.sign(key, hashes.SHA256())
+
+    end_entity_pem = cert.public_bytes(serialization.Encoding.PEM)[:-1]
+
+    end = end_entity_pem.decode()
+    intt = ica_ca.pem.decode()
+    root = root_ca.pem.decode()
+
+    chain = f"{end}\n{intt}\n{root}"
+    return chain.encode()
 
 
-
+# if __name__ == '__main__':
+#     print("Enter a common name and a test SSL certificate chain of trust will be generated.\n")
+#
+#     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+#     common_name = input("Common Name: ")
+#     cert = get_test_trust_chain(common_name, key)
+#     print(cert)
