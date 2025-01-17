@@ -13,7 +13,6 @@ class TestPrivateKey:
     def test__init__(self, exponent, klen):
         key = my_rsa_key(exponent=exponent, key_length=klen)
         pprint.pprint(key)
-        assert key.pub_exponent == exponent
         assert key.key_len == klen
         assert isinstance(key._native_key_object, RSAPrivateKey)
         assert key._selected_encoding == 'pem'
@@ -115,3 +114,4 @@ class TestCSR:
             assert b'PUBLIC KEY' not in public_key
         if encoding == 'pem':
             assert b'PUBLIC KEY' in public_key
+

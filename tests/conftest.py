@@ -118,6 +118,10 @@ CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
 """
     return cert
 
+def pvtkey_str():
+    pass
+
+
 @pytest.fixture(scope='function')
 def list_orders():
     # https://dev.digicert.com/en/certcentral-apis/services-api/orders/list-orders.html
