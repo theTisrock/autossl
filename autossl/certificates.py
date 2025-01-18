@@ -1,17 +1,9 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat import backends
 from autossl.keygen import RSAPrivateKey
 from cryptography.x509 import NameOID, load_pem_x509_certificate, Certificate
 import re
-
-
-# class DigitalCertificate:
-
-    # @staticmethod
-    # def load_pem_certificate(certificate: str):
-    #
 
 
 class DeployableCertificate(object):
@@ -80,7 +72,7 @@ class DeployableCertificate(object):
             return rsa_private_key
         # if str
         pkcs1_pattern = re.compile(r"^-----BEGIN RSA PRIVATE KEY-----\n[\S\s]+\n-----END RSA PRIVATE KEY-----$")
-        # TODO pkcs8_pattern = re.compile(r"^-----BEGIN PRIVATE KEY-----\n[\S\s]+\n-----END PRIVATE KEY-----$")
+        pkcs8_pattern = re.compile(r"^-----BEGIN PRIVATE KEY-----\n[\S\s]+\n-----END PRIVATE KEY-----$")
 
         if not pkcs8_pattern.match(rsa_private_key) and not pkcs1_pattern.match(rsa_private_key):
             raise ValueError("Invalid private key when initializing a Deployable Certificate. "

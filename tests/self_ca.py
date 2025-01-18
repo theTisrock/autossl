@@ -6,6 +6,12 @@ from cryptography.hazmat.primitives.asymmetric import rsa, ec
 import datetime
 
 
+COMMON_FIELDS = {
+    'country': 'US',
+    'state': 'North Carolina',
+    'locality': 'Raleigh'
+}
+
 class IntermediateCA(object): 
     """This represents an intermediate CA, which can sign and issue Digital Certificates as a leaf or for another intermediate CA. This is NOT a root CA."""
 
@@ -26,9 +32,9 @@ class IntermediateCA(object):
 
     def build_certificate(self):
         subject = x509.Name([
-            x509.NameAttribute(NameOID.COUNTRY_NAME, "US"),
-            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "North Carolina"),
-            x509.NameAttribute(NameOID.LOCALITY_NAME, "Raleigh"),
+            x509.NameAttribute(NameOID.COUNTRY_NAME, COMMON_FIELDS['country']),
+            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, COMMON_FIELDS['state']),
+            x509.NameAttribute(NameOID.LOCALITY_NAME, COMMON_FIELDS['locality']),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Intermediate CA Corp"),
             x509.NameAttribute(NameOID.COMMON_NAME, self.cn)
         ])
@@ -115,9 +121,9 @@ class RootCA(object):
 
     def build_certificate(self):
         subject = issuer = x509.Name([
-            x509.NameAttribute(NameOID.COUNTRY_NAME, 'US'),
-            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, 'North Carolina'),
-            x509.NameAttribute(NameOID.LOCALITY_NAME, 'Raleigh'),
+            x509.NameAttribute(NameOID.COUNTRY_NAME, COMMON_FIELDS['country']),
+            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, COMMON_FIELDS['state']),
+            x509.NameAttribute(NameOID.LOCALITY_NAME, COMMON_FIELDS['locality']),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'ROOT CA Corp'),
             x509.NameAttribute(NameOID.COMMON_NAME, 'ROOT CA'),
         ])
@@ -181,6 +187,7 @@ class RootCA(object):
 
 
 def get_test_trust_chain(cn, key):
+    """Build a full certificate chain that's tied to the private key"""
     root_ca = RootCA()
     root_ca.generate_certificate()
     ica_ca = IntermediateCA(root_ca.pvtkey, root_ca.cert)
@@ -188,9 +195,9 @@ def get_test_trust_chain(cn, key):
 
     cert = CertificateBuilder()
     subject = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, 'US'),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, 'North Carolina'),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, 'Raleigh'),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, COMMON_FIELDS['country']),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, COMMON_FIELDS['state']),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, COMMON_FIELDS['locality']),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, 'Acme Corportation'),
         x509.NameAttribute(NameOID.COMMON_NAME, cn),
     ])
@@ -247,13 +254,5 @@ def get_test_trust_chain(cn, key):
     root = root_ca.pem.decode()
 
     chain = f"{end}\n{intt}\n{root}"
-    return chain.encode()
-
-
-# if __name__ == '__main__':
-#     print("Enter a common name and a test SSL certificate chain of trust will be generated.\n")
-#
-#     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-#     common_name = input("Common Name: ")
-#     cert = get_test_trust_chain(common_name, key)
-#     print(cert)
+    chain = chain.encode()
+    return (chain, key, )
