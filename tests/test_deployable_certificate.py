@@ -78,3 +78,14 @@ class TestDeployableCertificate:
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
         assert isinstance(cert.pkcs12, bytes)
         assert isinstance(cert.pfx, bytes)
+
+    @pytest.mark.parametrize("keyfmt", ['pkcs1', 'pkcs8'])
+    def test_key_formats(self, certificate_chain, pvtkey, keyfmt):
+        chain, key = certificate_chain('foo.com', pvtkey)
+        cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
+        if keyfmt == 'pkcs1':
+            assert b'RSA' in cert.key_pkcs1
+        if keyfmt == 'pkcs8':
+            assert b'RSA' not in cert.key_pkcs8
+
+

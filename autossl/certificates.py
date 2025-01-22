@@ -44,9 +44,9 @@ class DeployableCertificate(object):
 
     @classmethod
     def _process_certificate_chain(cls, certificate_chain: str):
-        fullchain_pem_pattern = re.compile("^(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
-                                           "(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
-                                           "(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)$")
+        fullchain_pem_pattern = re.compile(r"^(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
+                                           r"(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
+                                           r"(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)$")
         match = fullchain_pem_pattern.match(certificate_chain)
         if match is None:
             raise ValueError("The certificate passed in is not valid. "
@@ -167,7 +167,7 @@ class DeployableCertificate(object):
 
     @property
     def key_pkcs8(self):
-        return self._rsa_key.pkcs1
+        return self._rsa_key.pkcs8
 
     @key_pkcs8.setter
     def key_pkcs8(self, _):
