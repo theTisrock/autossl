@@ -29,29 +29,45 @@ class TestDeployableCertificate:
         assert isinstance(cert._ica_cert, Certificate)
         assert isinstance(cert._domain_cert, Certificate)
 
-    def test_domain_cert(self, certificate_chain, pvtkey):
-        chain, key = certificate_chain('foo.com', pvtkey)
-        cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
-        assert b'BEGIN CERTIFICATE' in cert.domain_pem
-        assert b'END CERTIFICATE' in cert.domain_pem
-        assert cert.domain_pem[-1] != b'\n'
-        assert b'foo.com' in cert.domain_der
+        serializations = [
+            cert.domain_pem, cert.ica_pem, cert.root_pem, cert.pem, cert.domain_der, cert.ica_der, cert.root_der,
+            cert.der, cert.key_pkcs1, cert.key_pkcs8, cert.pfx, cert.pkcs12
+        ]
+        for obj in serializations:
+            assert isinstance(obj, bytes)
 
-    def test_ica_cert_properties(self, certificate_chain, pvtkey):
+    @pytest.mark.parametrize("format", ["pem", "der"])
+    def test_domain_cert(self, certificate_chain, pvtkey, format):
         chain, key = certificate_chain('foo.com', pvtkey)
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
-        assert b'BEGIN CERTIFICATE' in cert.ica_pem
-        assert b'END CERTIFICATE' in cert.ica_pem
-        assert cert.ica_pem[-1] != b'\n'
-        assert b'Intermediate CA' in cert.ica_der
+        if format == "pem":
+            assert b'BEGIN CERTIFICATE' in cert.domain_pem
+            assert b'END CERTIFICATE' in cert.domain_pem
+            assert cert.domain_pem[-1] != b'\n'
+        if format == "der":
+            assert b'foo.com' in cert.domain_der
 
-    def test_root_cert_properties(self, certificate_chain, pvtkey):
+    @pytest.mark.parametrize("format", ["pem", "der"])
+    def test_intermediate_cert(self, certificate_chain, pvtkey, format):
         chain, key = certificate_chain('foo.com', pvtkey)
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
-        assert b'BEGIN CERTIFICATE' in cert.root_pem
-        assert b'END CERTIFICATE' in cert.root_pem
-        assert cert.root_pem[-1] != b'\n'
-        assert b'ROOT CA' in cert.root_der
+        if format == "pem":
+            assert b'BEGIN CERTIFICATE' in cert.ica_pem
+            assert b'END CERTIFICATE' in cert.ica_pem
+            assert cert.ica_pem[-1] != b'\n'
+        if format == "der":
+            assert b'Intermediate CA' in cert.ica_der
+
+    @pytest.mark.parametrize("format", ["pem", "der"])
+    def test_root_cert(self, certificate_chain, pvtkey, format):
+        chain, key = certificate_chain('foo.com', pvtkey)
+        cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
+        if format == "pem":
+            assert b'BEGIN CERTIFICATE' in cert.root_pem
+            assert b'END CERTIFICATE' in cert.root_pem
+            assert cert.root_pem[-1] != b'\n'
+        if format == "der":
+            assert b'ROOT CA' in cert.root_der
 
     def test_pem_chain(self, certificate_chain, pvtkey):
         chain, key = certificate_chain('foo.com', pvtkey)
@@ -75,14 +91,14 @@ class TestDeployableCertificate:
         assert b'ROOT CA' in cert.der
         assert cert.der[-1] != b'\n'
 
-    def test_pfx_pkcs12(self, certificate_chain, pvtkey):
+    def test_pfx_pkcs12_plus_matching_privatekey(self, certificate_chain, pvtkey):
         chain, key = certificate_chain('foo.com', pvtkey)
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
         assert isinstance(cert.pkcs12, bytes)
         assert isinstance(cert.pfx, bytes)
 
     @pytest.mark.parametrize("keyfmt", ['pkcs1', 'pkcs8'])
-    def test_key_formats(self, certificate_chain, pvtkey, keyfmt):
+    def test_certificate_rsa_privatekey_formats(self, certificate_chain, pvtkey, keyfmt):
         chain, key = certificate_chain('foo.com', pvtkey)
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
         if keyfmt == 'pkcs1':
