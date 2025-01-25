@@ -32,7 +32,10 @@ pip install autossl
 ```
 
 ## Keygen
-Generate a private key and CSR
+Generate a private key and CSR.
+
+This key pair are cryptographically binded to each other.
+The CSR contains the public key. The public key is calculated from the private key.
 ```python
 from autossl import keygen
 # ---------------------- SIMPLE - PEM encoded, pkcs1 format, no SANs -------------------------
@@ -84,3 +87,48 @@ print(csr.get_public_key())  # public key format will match that of the private 
 ```
 
 ## Certificate Acquisition
+Pull a new certificate from the Certificate Authority.
+```python
+from autossl.ca_api import DigicertCertificates
+
+
+organization_id = 123
+api_key='<my api key>'
+digicert = DigicertCertificates(organization_id, api_key=api_key)
+
+order_id = digicert.submit_certificate_request(csr)  # <- you can also use a raw PEM csr here
+
+if digicert.certificate_is_issued(order_id):
+    chain = digicert.fetch_certificate(order_id)
+    domain: bytes = chain[0]
+    intermediate: bytes = chain[1]
+    root: bytes = chain[2]
+else:
+    print("Certificate not issued.")
+```
+
+## Certificate Serialization
+Prepare the certificate for distribution to 1 or many platforms.
+
+Remember that private key from above? Use it here.
+```python
+from autossl.certificates import DeployableCertificate
+
+
+chain: str = f"{domain.decode()}\n{intermediate.decode()}\n{root.decode()}"
+cert = DeployableCertificate(chain, pvtkey)
+
+# now you can split the cert into different components, formats and encodings
+# ALL OUTPUTS ARE IN BYTES. This is what most platforms want. Use str.decode() if you need a string.
+cert.pem  # full chain pem and der encodings
+cert.der
+cert.domain_pem  # pem components, same for der: domain_der ... etc
+cert.ica_pem
+cert.root_pem
+cert.pfx  # for azure application gateway. Same as pkcs12
+cert.pkcs12
+cert.azure_pem  # full chain pem with pkcs8 key at the bottom
+cert.key_pkcs1  # You can access the private key from the cert in 2 pem formats
+cert.key_pkcs8
+
+```
