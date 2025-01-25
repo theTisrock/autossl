@@ -31,7 +31,7 @@ class TestDeployableCertificate:
 
         serializations = [
             cert.domain_pem, cert.ica_pem, cert.root_pem, cert.pem, cert.domain_der, cert.ica_der, cert.root_der,
-            cert.der, cert.key_pkcs1, cert.key_pkcs8, cert.pfx, cert.pkcs12
+            cert.der, cert.key_pkcs1, cert.key_pkcs8, cert.pfx, cert.pkcs12, cert.azure_pem
         ]
         for obj in serializations:
             assert isinstance(obj, bytes)
@@ -105,3 +105,11 @@ class TestDeployableCertificate:
             assert b'RSA' in cert.key_pkcs1
         if keyfmt == 'pkcs8':
             assert b'RSA' not in cert.key_pkcs8
+
+    def test_azure_pem(self, certificate_chain, pvtkey):
+        chain, key = certificate_chain('foo.com', pvtkey)
+        cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
+        actual = cert.azure_pem
+        print(actual)
+        assert actual.startswith(b'-----BEGIN CERTIFICATE-----')
+        assert actual.endswith(b'-----END PRIVATE KEY-----')

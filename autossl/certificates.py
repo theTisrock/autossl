@@ -200,3 +200,11 @@ class DeployableCertificate(object):
     @pkcs12.setter
     def pkcs12(self, _):
         print("property is read-only")
+
+    @property
+    def azure_pem(self):
+        return self.pem + b'\n' + self.key_pkcs8
+
+    @azure_pem.setter
+    def azure_pem(self, _):
+        print("property is read-only")
