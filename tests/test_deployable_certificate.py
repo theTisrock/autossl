@@ -6,6 +6,8 @@ from autossl.keygen import RSAPrivateKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey as cryptorsakey
 
+TEST_BASE_URL = 'http://localhost:3001/'
+
 
 def pvtkey_to(key: cryptorsakey, to: str | bytes):
     d: bytes = key.private_bytes(
@@ -22,7 +24,7 @@ class TestDeployableCertificate:
         chain, key = certificate_chain('foo.com', pvtkey)  # generate a certificate chain and key pair
         # key loads as string or native object
         key = RSAPrivateKey(pvtkey_to(key, str)) if key_as_native else pvtkey_to(key, str)
-        cert = DeployableCertificate(chain.decode(), key)
+        cert = DeployableCertificate(chain.decode(), key)  # tested using object and str versions
         assert isinstance(cert._root_cert, Certificate)
         assert isinstance(cert._ica_cert, Certificate)
         assert isinstance(cert._domain_cert, Certificate)
@@ -87,5 +89,3 @@ class TestDeployableCertificate:
             assert b'RSA' in cert.key_pkcs1
         if keyfmt == 'pkcs8':
             assert b'RSA' not in cert.key_pkcs8
-
-

@@ -1,4 +1,4 @@
-# configuration for testing
+# fixtures for testing
 import pytest
 from .self_ca import get_test_trust_chain
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -46,6 +46,7 @@ def csr_without_sans():
                 "-----END CERTIFICATE REQUEST-----")
     return test_csr
 
+
 @pytest.fixture(scope='function')
 def certificate_chain():
     
@@ -58,7 +59,6 @@ def certificate_chain():
 @pytest.fixture(scope='function')
 def pvtkey():
     return rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
-
 
 @pytest.fixture(scope='function')
 def list_orders():
