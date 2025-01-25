@@ -31,104 +31,83 @@ Install
 pip install autossl
 ```
 
+# Guide
 ## Keygen
-Generate a private key and CSR.
 
-This key pair are cryptographically binded to each other.
-The CSR contains the public key. The public key is calculated from the private key.
+Generate your private-public key pair and a CSR
+
+Generate a private key or use your own
 ```python
-from autossl import keygen
-# ---------------------- SIMPLE - PEM encoded, pkcs1 format, no SANs -------------------------
-pvtkey = keygen.RSAPrivateKey()  # generate rsa key
-csr = keygen.CSR(pvtkey, 'foo.com')  # initialize a csr
-csr.finalize()  # sign the csr
-csr.get_public_key()  # optional: get the public key
+from autossl.keygen import RSAPrivateKey, CSR
 
+key = RSAPrivateKey()  # library generated
 
-# ------------------------------ EXPANDED ----------------------------------------
-# GENERATE A PRIVATE KEY
-print("generating private key...")
-pvtkey = keygen.RSAPrivateKey(fmt='pkcs8')  # default is pkcs1
-pvtkey = keygen.RSAPrivateKey(key_length=4096)  # default is 2048; choices: 2048, 3072, 4096
-pvtkey.pkcs1  # get different formats, all currently in PEM encoding
-pvtkey.pkcs8
-print(repr(pvtkey))
+text: str = None
+with open('rsakey.pem', mode='r') as rsakeyfile:
+    text = rsakeyfile.read()
+    rsakeyfile.close()
+    
+key = RSAPrivateKey(pem=text)  # load your own into the library component
 
-# GENERATE A CSR
-print("generating csr...")
-csr = keygen.CSR(pvtkey, 'foo.com', critical=True, out_encoding='der')  # defaults: critical=True, out_encoding='pem'
-print(repr(csr))
-print("adding metadata to csr")
-# NOTE: out_encoding selects the main output encoding. (see below)
-csr.country = 'US'  # build your CSR fields
-csr.email = 'joe.smith@foo.com'
-csr.state = 'CA'
-csr.locality = 'San Jose'
-csr.organization = 'ACME'
-csr.organizational_unit = 'marketing'
-csr.common_name = 'bar.com'  # changes from foo.com to bar.com, optional
-csr.common_name = 'foo.com'
-csr.sans = ['bar.com', 'baz.com', 'foobar.com']
-csr.add_san('www.foo.com')
-print(repr(csr))  # you can inspect your csr before signing it
-print("signing csr...")
-csr.finalize()  # assemble and sign your CSR
-# NOTE: now that the csr is signed, you may not edit the fields
-print(repr(csr))  # inspect your csr after signing; you'll notice it has changed
-
-print("csr")
-print(csr.out)  # the CSR expressed in the selected encoding from when you set 'out_encoding'
-csr.pem  # ...though you can still access each type explicitly
-csr.der
-
-# GET THE PUBLIC KEY
-print("getting public key...")
-print(csr.get_public_key())  # public key format will match that of the private key
+# serializations - two pem formats available as properties
+key.pkcs1
+key.pkcs8
 ```
 
-## Certificate Acquisition
-Pull a new certificate from the Certificate Authority.
+Generate the CSR
+```python
+from autossl.keygen import CSR
+
+csr = CSR(key, 'foobar.com')
+csr.organization = 'Acme Corp'
+csr.organizational_unit = "marketing"
+csr.country = 'US'
+csr.add_san('www.foobar.com')  # add dns names 1 at a time
+csr.sans = ['foo.com', 'www.bar.com']  # override the dns names
+
+csr.finalize()  # Finalizing is required before submitting to the CA
+# NO MORE MODIFICATIONS AFTER SIGNING
+
+csr.get_public_key()
+# NOTE: When sending the CSR to the Certificate Authority, you can use your own raw PEM formatted version and skip this
+
+# serializations
+csr.out  # out is set at instantiation and can be changed from its default like CSR(... , out_encoding='der')
+csr.pem  # or you can select explicitly
+csr.der
+```
+
+## Certificate Acquisition - CA Clients
+
+...continuing from above...
 ```python
 from autossl.ca_api import DigicertCertificates
+import time
 
+org_id = 123
+ca_api_client = DigicertCertificates(org_id=org_id, api_key='<your api key>')
 
-organization_id = 123
-api_key='<my api key>'
-digicert = DigicertCertificates(organization_id, api_key=api_key)
+# Use the generated csr
+order_id = ca_api_client.submit_certificate_request(csr)  # using the csr from above
 
-order_id = digicert.submit_certificate_request(csr)  # <- you can also use a raw PEM csr here
+text_csr: str = None
+with open('csr.pem', mode='r') as csr:
+    text_csr = csr.read()
+    csr.close()
+    
+order_id = ca_api_client.submit_certificate_request(text_csr)  # user supplied csr
 
-if digicert.certificate_is_issued(order_id):
-    chain = digicert.fetch_certificate(order_id)
-    domain: bytes = chain[0]
-    intermediate: bytes = chain[1]
-    root: bytes = chain[2]
-else:
-    print("Certificate not issued.")
-```
+counter_limit = 10
+counter = 0
+while not ca_api_client.certificate_is_issued(order_id):  # check issuance status
+    time.sleep(5)
+    if counter > counter_limit: break
+    counter += 1
 
-## Certificate Serialization
-Prepare the certificate for distribution to 1 or many platforms.
+d, i, r = ca_api_client.fetch_certificate(order_id)
+domain: bytes = d
+intermediate: bytes = i
+root: bytes = r
 
-Remember that private key from above? Use it here.
-```python
-from autossl.certificates import DeployableCertificate
-
-
-chain: str = f"{domain.decode()}\n{intermediate.decode()}\n{root.decode()}"
-cert = DeployableCertificate(chain, pvtkey)
-
-# now you can split the cert into different components, formats and encodings
-# ALL OUTPUTS ARE IN BYTES. This is what most platforms want. Use str.decode() if you need a string.
-cert.pem  # full chain pem and der encodings
-cert.der
-cert.domain_pem  # pem components, same for der: domain_der ... etc
-cert.ica_pem
-cert.root_pem
-cert.pfx  # for azure application gateway. Same as pkcs12
-cert.pkcs12
-cert.azure_pem  # full chain pem with pkcs8 key at the bottom
-cert.key_pkcs1  # You can access the private key from the cert in 2 pem formats
-cert.key_pkcs8
-
+# congrats! Now you have a newly issued certificate
 ```
