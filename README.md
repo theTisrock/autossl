@@ -36,9 +36,9 @@ pip install autossl
 
 Generate your private-public key pair and a CSR
 
-Generate a private key or use your own
+<u>Generate a private key or load your own</u>
 ```python
-from autossl.keygen import RSAPrivateKey, CSR
+from autossl.keygen import RSAPrivateKey
 
 key = RSAPrivateKey()  # library generated
 
@@ -54,7 +54,12 @@ key.pkcs1
 key.pkcs8
 ```
 
-Generate the CSR
+<u>Generate a CSR</u>
+
+A user supplied CSR may be supplied as PEM-encoded text when requesting a certificate with a certificate authority.
+There is no apparent need to load a CSR component into a library object.
+
+Below demonstrates a library generated CSR that allows for customization.
 ```python
 from autossl.keygen import CSR
 
@@ -110,4 +115,56 @@ intermediate: bytes = i
 root: bytes = r
 
 # congrats! Now you have a newly issued certificate
+```
+
+Now you're at a point where you where you could begin automating the distribution of new or renewed SSL/TLS Certificates.
+
+Depending on your enterprise environment, you may need to distribute that certificate to multiple platform APIs.
+Each API has different requirements. 
+
+Azure requires SSL/TLS certificates destined for Application Gateway to be in PFX format.
+You can also use a PEM format with a catch... the private key must be appended to the bottom of the full certificate chain.
+
+But AWS wants you to separate out the components for ACM like: [pkcs1 private key] + [ICA & Root cert chain] + [domain cert]
+
+Other platforms have their own requirements. It's a lot of work to convert between formats and encodings.
+
+Introducing SSL certificae Serialization!!!
+
+## Deployable Certificates
+
+A multi-serializable SSL/TLS Certificate object.
+A deployable cert is one that has the full certificate chain of trust with it's associated private key. 
+
+Continuing with the downloaded certificate in the code sample above...
+
+```python
+from autossl.certificates import DeployableCertificate
+
+
+certificate_chain = f"{domain.decode()}\n{ica.decode()}\n{root.decode()}"
+cert = DeployableCertificate(certificate_chain, key)  # load library generated key from example above
+
+pem_key: str = None
+with open('rsakey.pem', mode='r') as keyfile:
+    pem_key = keyfile.read()
+    keyfile.close()
+cert = DeployableCertificate(certificate_chain, pem_key)  # load user supplied key
+
+# certificate serializations - outputs all in bytes
+cert.pem  # fullchain - 2 options
+cert.der
+cert.domain_pem  # individual components encodded as PEM or DER
+cert.domain_der
+cert.ica_pem
+cert.ica_der
+cert.root_pem
+cert.root_der
+cert.key_pkcs1  # 2 private key serializations, both PEM. AWS ACM wants pkcs1
+cert.key_pkcs8  # azure likes pkcs8
+cert.pfx  # bundled cert chain plus private key. Used for Azure Application Gateway.
+cert.pkcs12  # alias for pfx
+cert.azure_pem  # Azure full chain with pkcs8 key
+
+# REMEMBER: use the bytes.decode() if you want these in string format for any PEM encoded components
 ```

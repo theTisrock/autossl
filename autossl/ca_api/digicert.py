@@ -350,6 +350,8 @@ class DigicertCertificates(CACertificatesInterface):
         required_csr_fields = {'common_name': None, 'dns_names': None, 'signature_hash': None, 'csr': None}
         csr_txt = None
         # CSR field extraction
+        if isinstance(pem_csr, bytes):
+            pem_csr = pem_csr.decode(encoding='utf-8')
         if isinstance(pem_csr, str):
             csr_txt = pem_csr
             if self._is_valid_user_csr(pem_csr): required_csr_fields = self._extract_user_supplied_csr_fields(pem_csr)
