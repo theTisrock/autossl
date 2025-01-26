@@ -22,7 +22,7 @@ class RSAPrivateKey(object):
                  'der': serialization.Encoding.DER}
 
     def __init__(
-            self, exponent: int = PUBLIC_EXPONENT, key_length: int = KEY_SIZE, backend = BACKEND, fmt: str = 'pkcs1'
+            self, pem: str = None, exponent: int = PUBLIC_EXPONENT, key_length: int = KEY_SIZE, backend = BACKEND, fmt: str = 'pkcs1'
     ):
 
         if not ((exponent in PUBLIC_EXPONENTS) and (key_length in KEY_SIZES) and (backend in BACKENDS) and fmt in KEY_FORMATS):
@@ -31,17 +31,18 @@ class RSAPrivateKey(object):
                 f"exponent:{exponent},key size:{key_length},fmt:{fmt}"
             )
 
-        self._native_key_object = rsa.generate_private_key(
-            public_exponent=exponent, key_size=key_length, backend=backend()
+        self._native_key_object = (
+            rsa.generate_private_key(public_exponent=exponent, key_size=key_length, backend=backend())
+        ) if not pem else (
+            serialization.load_pem_private_key(pem.encode(encoding='utf-8'),None, backend=default_backend())
         )
-        self.pub_exponent = exponent
-        self.key_len = key_length
+        self.key_len = self._native_key_object.key_size
         self.backend_name = backend.__name__
         self.selected_format = fmt
         self._selected_encoding = 'pem'
 
     def __repr__(self):
-        return f"<RSAPvtKey:{id(self)} exp:{self.pub_exponent},{self.key_len}-bits,{self.selected_format}>"
+        return f"<RSAPvtKey:{id(self)} {self.key_len}-bits,{self.selected_format}>"
 
     def __str__(self):
         key: bytes = getattr(self, self.selected_format)
@@ -72,3 +73,4 @@ class RSAPrivateKey(object):
     @pkcs8.setter
     def pkcs8(self, _):
         raise ValueError("The private key cannot be set using the pkcs8 property.")
+

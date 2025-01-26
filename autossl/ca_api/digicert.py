@@ -350,6 +350,8 @@ class DigicertCertificates(CACertificatesInterface):
         required_csr_fields = {'common_name': None, 'dns_names': None, 'signature_hash': None, 'csr': None}
         csr_txt = None
         # CSR field extraction
+        if isinstance(pem_csr, bytes):
+            pem_csr = pem_csr.decode(encoding='utf-8')
         if isinstance(pem_csr, str):
             csr_txt = pem_csr
             if self._is_valid_user_csr(pem_csr): required_csr_fields = self._extract_user_supplied_csr_fields(pem_csr)
@@ -405,9 +407,9 @@ class DigicertCertificates(CACertificatesInterface):
                 raise response.raise_for_status()
 
         whole_pem = response.content.decode(encoding='utf-8')
-        fullchain_pem_pattern = re.compile("^(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
-                                           "(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
-                                           "(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n*$")
+        fullchain_pem_pattern = re.compile(r"^(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
+                                           r"(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n"
+                                           r"(-----BEGIN CERTIFICATE-----\n[\S\s]+\n-----END CERTIFICATE-----)\n*$")
         match = re.match(fullchain_pem_pattern, whole_pem)
         try:  # make sure we have all parts accounted for before we deliver the cert components
             assert match is not None
