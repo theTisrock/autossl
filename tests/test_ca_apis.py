@@ -88,9 +88,10 @@ class TestDigicertCertificatesClient(object):
         digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
         actual = digicert.fetch_certificate(123456)
         assert isinstance(actual, tuple)
-        assert isinstance(actual[0], bytes)
-        assert isinstance(actual[1], bytes)
-        assert isinstance(actual[2], bytes)
+        assert len(actual) == 3
+        for cert in actual:
+            assert isinstance(cert, bytes)
+            assert b'-----BEGIN CERTIFICATE-----' in cert
 
     def test_duplicate_download(self, csr_without_sans, capsys):
         digicert = DigicertCertificates(123, TEST_BASE_URL, api_key='_')
@@ -102,6 +103,7 @@ class TestDigicertCertificatesClient(object):
         assert "Found CSR-matched duplicate." in capture.out
         assert "fetching the certificate" in capture.out
         assert isinstance(actual, tuple)
-        assert isinstance(actual[0], bytes)
-        assert isinstance(actual[1], bytes)
-        assert isinstance(actual[2], bytes)
+        assert len(actual) == 3
+        for cert in actual:
+            assert isinstance(cert, bytes)
+            assert b'-----BEGIN CERTIFICATE-----' in cert
