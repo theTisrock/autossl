@@ -12,6 +12,7 @@ class CSR(object):
     FORMATS = {'pkcs1': serialization.PublicFormat.PKCS1, 'pkcs8': serialization.PublicFormat.SubjectPublicKeyInfo}
 
     def __init__(self, pvtkey: RSAPrivateKey, common_name: str, critical: bool = False, out_encoding: str = 'pem'):
+        pvtkey = RSAPrivateKey(pem=pvtkey) if isinstance(pvtkey, str) else pvtkey
         self.is_signed = False
         self._pvtkey_fmt = pvtkey.selected_format
         self._pvt_key = pvtkey._native_key_object
