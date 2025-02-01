@@ -1,17 +1,19 @@
 # autossl
-<b>Automate your SSL certificate workflows</b>
+### Automate your SSL certificate workflows
 
-author: Chris Torok
 
-## Features & Benefits:
+Decrease Outages, Increase Reliability and Maintain Availability & Security of Infrastructure.
+
+## Problems
+
+1. Each cloud provider or platform has different required encodings & PKCS formats for provisioning Digital Certificates.
+2. Each Certificate Authority (CA) has different processes for ordering.
+
+## Benefit / Feature:
+
 - Automate the PKI keygen process: Private Keys, Certificate Signing Requests (CSR)s
-
-<u>Why</u>?
-1. Each platform API wants cryptographic components provided in different layout structures, different encodings, 
-and different data types.
-2. Each Certificate Authority has different processes for handling CSR requests for new certificates and requesting new 
-"duplicate" certificates.
-3. Prevent outages and reduced traffic by assessing your PKI footprint across cloud platforms and third-party services.
+- Automate Certificate acquisition: Certificate Authority (CA) Clients
+- Make switching Certificate formats & encodings a breeze: Deployable Certificates
 
 
 Design Philosophy (non-functional requirements)
