@@ -35,6 +35,7 @@ class DeployableCertificate(object):
         self._root_cert: Certificate = r
         self._cn = self._domain_cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
         self._rsa_key: RSAPrivateKey = self._process_private_key(key)
+        self._pfxpkcs12 = self._pfx_pkcs12()
 
 
     def __repr__(self):
@@ -186,7 +187,7 @@ class DeployableCertificate(object):
 
     @property
     def pfx(self):
-        return self._pfx_pkcs12()
+        return self._pfxpkcs12
 
     @pfx.setter
     def pfx(self, _):
@@ -195,7 +196,7 @@ class DeployableCertificate(object):
 
     @property
     def pkcs12(self):
-        return self._pfx_pkcs12()
+        return self._pfxpkcs12
 
     @pkcs12.setter
     def pkcs12(self, _):
