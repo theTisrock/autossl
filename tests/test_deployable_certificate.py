@@ -20,19 +20,20 @@ def pvtkey_to(key: cryptorsakey, to: str | bytes):
 class TestDeployableCertificate:
 
     @pytest.mark.parametrize("key_as_native", [False, True])
-    def test_init(self, certificate_chain, pvtkey, key_as_native):
+    def test_properties(self, certificate_chain, pvtkey, key_as_native):
         chain, key = certificate_chain('foo.com', pvtkey)  # generate a certificate chain and key pair
         # key loads as string or native object
+        # simulate user supplied PEM or autossl.keygen generated private key
         key = RSAPrivateKey(pvtkey_to(key, str)) if key_as_native else pvtkey_to(key, str)
         cert = DeployableCertificate(chain.decode(), key)  # tested using object and str versions
         assert isinstance(cert._root_cert, Certificate)
         assert isinstance(cert._ica_cert, Certificate)
         assert isinstance(cert._domain_cert, Certificate)
-
         serializations = [
             cert.domain_pem, cert.ica_pem, cert.root_pem, cert.pem, cert.domain_der, cert.ica_der, cert.root_der,
             cert.der, cert.key_pkcs1, cert.key_pkcs8, cert.pfx, cert.pkcs12, cert.azure_pem
         ]
+
         for obj in serializations:
             assert isinstance(obj, bytes)
 
@@ -96,9 +97,10 @@ class TestDeployableCertificate:
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
         assert isinstance(cert.pkcs12, bytes)
         assert isinstance(cert.pfx, bytes)
+        assert cert.pfx == cert.pkcs12
 
     @pytest.mark.parametrize("keyfmt", ['pkcs1', 'pkcs8'])
-    def test_certificate_rsa_privatekey_formats(self, certificate_chain, pvtkey, keyfmt):
+    def test_key_formats(self, certificate_chain, pvtkey, keyfmt):
         chain, key = certificate_chain('foo.com', pvtkey)
         cert = DeployableCertificate(chain.decode(), pvtkey_to(key, str))
         if keyfmt == 'pkcs1':
