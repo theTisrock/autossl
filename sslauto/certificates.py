@@ -1,7 +1,7 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.hazmat.primitives import serialization
-from autossl.keygen import RSAPrivateKey
+from sslauto.keygen import RSAPrivateKey
 from cryptography.x509 import NameOID, load_pem_x509_certificate, Certificate
 import re
 

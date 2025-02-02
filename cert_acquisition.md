@@ -40,8 +40,8 @@ and hand the final Certificate back to you.
 #### get a certificate from the CA
 
 ```python
-from autossl.ca_api import DigicertCertificates
-from autossl.keygen import CSR, RSAPrivateKey
+from sslauto.ca_api import DigicertCertificates
+from sslauto.keygen import CSR, RSAPrivateKey
 import time
 
 org_id = 123
@@ -91,7 +91,7 @@ export DIGICERT_APIKEY=<your api key>
 ```
 
 ```python
-from autossl.ca_api import DigicertCertificates
+from sslauto.ca_api import DigicertCertificates
 
 digicert = DigicertCertificates()
 

@@ -1,6 +1,6 @@
 import pytest
-from autossl.keygen import RSAPrivateKey as my_rsa_key
-from autossl.keygen import CSR
+from sslauto.keygen import RSAPrivateKey as my_rsa_key
+from sslauto.keygen import CSR
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives import serialization
 import pprint

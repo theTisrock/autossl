@@ -1,6 +1,6 @@
 import pytest
-from autossl.ca_api import DigicertCertificates
-from autossl.keygen import CSR, RSAPrivateKey
+from sslauto.ca_api import DigicertCertificates
+from sslauto.keygen import CSR, RSAPrivateKey
 import pprint
 from freezegun import freeze_time
 
@@ -13,7 +13,7 @@ class TestDigicertCertificatesClient(object):
     @pytest.mark.parametrize("with_sans", [True, False])
     def test_extract_user_supplied_csr(self, with_sans, csr_without_sans, csr_with_sans):
         """Test that the CSR fields are extracted in case the user opts to submit a CSR in text form
-        as opposed to using autossl.keygen.CSR"""
+        as opposed to using sslauto.keygen.CSR"""
         if with_sans:
             results = DigicertCertificates._extract_user_supplied_csr_fields(csr_with_sans)
             pprint.pprint(results)
@@ -55,8 +55,8 @@ class TestDigicertCertificatesClient(object):
 
     # MAIN API
     @pytest.mark.parametrize("cn,sans,csr_type,dupe_policy,expected_order", [
-        ('foo.com', ['www.foo.com', 'bar.com', 'www.bar.com'], CSR, 'new', 123456, ),  # autossl supplied csr w/ sans
-        ('foo.com', [], CSR, 'new', 123456, ),  # autossl supplied csr w/o sans
+        ('foo.com', ['www.foo.com', 'bar.com', 'www.bar.com'], CSR, 'new', 123456, ),  # sslauto supplied csr w/ sans
+        ('foo.com', [], CSR, 'new', 123456, ),  # sslauto supplied csr w/o sans
         ('foo.com', [], str, 'new', 123456, ),  # try user supplied csr
         ('foo.com', [], CSR, 'require', 123459, ),  # force a duplicate order
     ])

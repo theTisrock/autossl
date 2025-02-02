@@ -1,8 +1,8 @@
 import pytest
-from autossl.certificates import DeployableCertificate
+from sslauto.certificates import DeployableCertificate
 from cryptography.x509 import Certificate
 import re
-from autossl.keygen import RSAPrivateKey
+from sslauto.keygen import RSAPrivateKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey as cryptorsakey
 
@@ -23,7 +23,7 @@ class TestDeployableCertificate:
     def test_properties(self, certificate_chain, pvtkey, key_as_native):
         chain, key = certificate_chain('foo.com', pvtkey)  # generate a certificate chain and key pair
         # key loads as string or native object
-        # simulate user supplied PEM or autossl.keygen generated private key
+        # simulate user supplied PEM or sslauto.keygen generated private key
         key = RSAPrivateKey(pvtkey_to(key, str)) if key_as_native else pvtkey_to(key, str)
         cert = DeployableCertificate(chain.decode(), key)  # tested using object and str versions
         assert isinstance(cert._root_cert, Certificate)
