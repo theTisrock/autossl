@@ -1,4 +1,4 @@
-# autossl
+# sslauto
 ### Automate your SSL certificate workflows
 
 
@@ -30,7 +30,7 @@ Keygen > Cert Acquisition > Platform Distribution (cloud | 3rd party) > Footprin
 
 Install
 ```commandline
-pip install autossl
+pip install sslauto
 ```
 
 # Guide
@@ -39,8 +39,9 @@ pip install autossl
 Generate your private-public key pair and a CSR
 
 <u>Generate a private key or load your own</u>
+
 ```python
-from autossl.keygen import RSAPrivateKey
+from sslauto.keygen import RSAPrivateKey
 
 key = RSAPrivateKey()  # library generated
 
@@ -48,7 +49,7 @@ text: str = None
 with open('rsakey.pem', mode='r') as rsakeyfile:
     text = rsakeyfile.read()
     rsakeyfile.close()
-    
+
 key = RSAPrivateKey(pem=text)  # load your own into the library component
 
 # serializations - two pem formats available as properties
@@ -62,8 +63,9 @@ A user supplied CSR may be supplied as PEM-encoded text when requesting a certif
 There is no apparent need to load a CSR component into a library object.
 
 Below demonstrates a library generated CSR that allows for customization.
+
 ```python
-from autossl.keygen import CSR
+from sslauto.keygen import CSR
 
 csr = CSR(key, 'foobar.com')
 csr.organization = 'Acme Corp'
@@ -87,8 +89,9 @@ csr.der
 ## Certificate Acquisition - CA Clients
 
 ...continuing from above...
+
 ```python
-from autossl.ca_api import DigicertCertificates
+from sslauto.ca_api import DigicertCertificates
 import time
 
 org_id = 123
@@ -101,7 +104,7 @@ text_csr: str = None
 with open('csr.pem', mode='r') as csr:
     text_csr = csr.read()
     csr.close()
-    
+
 order_id = ca_api_client.submit_certificate_request(text_csr)  # user supplied csr
 
 counter_limit = 10
@@ -141,8 +144,7 @@ A deployable cert is one that has the full certificate chain of trust with it's 
 Continuing with the downloaded certificate in the code sample above...
 
 ```python
-from autossl.certificates import DeployableCertificate
-
+from sslauto.certificates import DeployableCertificate
 
 certificate_chain = f"{domain.decode()}\n{ica.decode()}\n{root.decode()}"
 cert = DeployableCertificate(certificate_chain, key)  # load library generated key from example above

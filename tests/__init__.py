@@ -1,1 +1,1 @@
-# required to be present so that python can see the autossl main package
+# required to be present so that python can see the sslauto main package

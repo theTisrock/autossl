@@ -1,6 +1,6 @@
 import requests
 from requests.exceptions import HTTPError
-from autossl.keygen import CSR
+from sslauto.keygen import CSR
 from .ca import DigitalCertificateUses
 import os, re
 from .ca import CACertificatesInterface
@@ -328,7 +328,7 @@ class DigicertCertificates(CACertificatesInterface):
 
     @classmethod
     def _extract_user_supplied_csr_fields(cls, csr: str):
-        """When the user supplies a CSR that is not an instance of autossl.keygen.CSR and instead str,
+        """When the user supplies a CSR that is not an instance of sslauto.keygen.CSR and instead str,
         extract the fields from the user suppleid CSR so that we can make a web request for a certificate."""
         required_fields = dict()
         _csr = load_pem_x509_csr(csr.encode(encoding='utf-8'))
